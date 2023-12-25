@@ -199,6 +199,7 @@ export default makeStyles((theme) => ({
     },
     heroImg: {
       height: 480,
+      marginTop:170,
     },
     content: {
       padding: 8,

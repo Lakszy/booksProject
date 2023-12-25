@@ -4,7 +4,6 @@ import SearchIcon from "@material-ui/icons/Search";
 import Product from "./Product/Product.js";
 import useStyles from "./styles";
 import logo1 from "../../assets/Bookshop.gif";
-import scrollImg from "../../assets/scroll.gif";
 import "../ProductView/style.css";
 import { Link } from "react-router-dom";
 import mangaBg from "../../assets/maxresdefault.jpg";
@@ -21,7 +20,6 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
   const sectionRef = useRef(null);
 
   const handleInputClick = () => {
-
     sectionRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -29,12 +27,10 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
     <main className={classes.mainPage}>
       <div className={classes.toolbar} />
       <div className={classes.hero}>
-        <img className={classes.heroImg} src={logo1} height="720px" />
+        <img className={classes.heroImg} src={logo1}/>
 
         <div className={classes.heroCont}>
-          <h1 className={classes.heroHeader}>
-            BoOKS BOoKS!
-          </h1>
+          <h1 className={classes.heroHeader}>BoOKS BOoKS!</h1>
           <h3 className={classes.heroDesc} ref={sectionRef}>
             WE ALL ARE BOOKWORMS👾
           </h3>
@@ -139,12 +135,7 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
             <h3 className={classes.contentHeader}>
               Best <span style={{ color: "#f1361d" }}>Sellers</span>
             </h3>
-            <Grid
-              className={classes.contentFeatured}
-              container
-              justify="center"
-              spacing={1}
-            >
+            <Grid className={classes.contentFeatured} container>
               {featureProducts.map((product) => (
                 <Grid
                   className={classes.contentFeatured}
@@ -152,7 +143,7 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
                   xs={6}
                   sm={5}
                   md={3}
-                  lg={2}
+                  lg={3}
                   id="pro"
                 >
                   <Product product={product} onAddToCart={onAddToCart} />
@@ -191,12 +182,7 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
             />
           </div>
         </div>
-        <Grid
-          className={classes.content}
-          container
-          justify="center"
-          spacing={2}
-        >
+        <Grid className={classes.content} container spacing={2}>
           {products
             .filter((product) => {
               if (searchTerm === "") {
