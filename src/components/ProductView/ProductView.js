@@ -4,11 +4,9 @@ import { Link } from "react-router-dom";
 import { commerce } from "../../lib/commerce";
 import { useState, useEffect } from "react";
 import "./style.css";
-
 const createMarkup = (text) => {
   return { __html: text };
 };
-
 const ProductView = () => {
   const [product, setProduct] = useState({});
 
@@ -54,7 +52,7 @@ const ProductView = () => {
                 size="large"
                 className="custom-button"
                 component={Link}
-                to="/"
+                to="/products"
               >
                 Continue Shopping
               </Button>

@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import loadingImg from "./assets/loader.gif";
 import Navbar from "./components/Navbar/Navbar";
 import Login from "./components/Login/Login";
+import Signup from "./components/SignUp/SignUp";
 
 const Products = lazy(() => import("./components/Products/Products"));
 const Cart = lazy(() => import("./components/Cart/Cart"));
@@ -112,7 +113,10 @@ const App = () => {
                   <Route path="/" exact>
                     <Login />
                   </Route>
-                  <Route  path="/products">
+                  <Route path="/signup" exact>
+                    <Signup />
+                  </Route>
+                  <Route path="/products">
                     {MemoizedProducts}
                   </Route>
                   <Route exact path="/cart">
