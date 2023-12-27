@@ -9,7 +9,9 @@ import Signup from "./components/SignUp/SignUp";
 
 const Products = lazy(() => import("./components/Products/Products"));
 const Cart = lazy(() => import("./components/Cart/Cart"));
-const Checkout = lazy(() => import("./components/CheckoutForm/Checkout/Checkout"));
+const Checkout = lazy(() =>
+  import("./components/CheckoutForm/Checkout/Checkout")
+);
 const ProductView = lazy(() => import("./components/ProductView/ProductView"));
 const Manga = lazy(() => import("./components/Manga/Manga"));
 const Fiction = lazy(() => import("./components/Fiction/Fiction"));
@@ -69,7 +71,10 @@ const App = () => {
 
   const handleCaptureCheckout = async (checkoutTokenId, newOrder) => {
     try {
-      const incomingOrder = await commerce.checkout.capture(checkoutTokenId, newOrder);
+      const incomingOrder = await commerce.checkout.capture(
+        checkoutTokenId,
+        newOrder
+      );
       setOrder(incomingOrder);
       refreshCart();
     } catch (error) {
@@ -91,6 +96,7 @@ const App = () => {
   const MemoizedProducts = useMemo(
     () => (
       <Products
+        key={products.id}
         products={products}
         featureProducts={featureProducts}
         onAddToCart={handleAddToCart}
@@ -107,7 +113,10 @@ const App = () => {
           <Router>
             <div style={{ display: "flex" }}>
               <CssBaseline />
-              <Navbar totalItems={cart.total_items} handleDrawerToggle={handleDrawerToggle} />
+              <Navbar
+                totalItems={cart.total_items}
+                handleDrawerToggle={handleDrawerToggle}
+              />
               <Suspense fallback={<div>Loading...</div>}>
                 <Switch>
                   <Route path="/" exact>
@@ -116,9 +125,7 @@ const App = () => {
                   <Route path="/signup" exact>
                     <Signup />
                   </Route>
-                  <Route path="/products">
-                    {MemoizedProducts}
-                  </Route>
+                  <Route path="/products">{MemoizedProducts}</Route>
                   <Route exact path="/cart">
                     <Cart
                       cart={cart}
@@ -139,13 +146,25 @@ const App = () => {
                     <ProductView />
                   </Route>
                   <Route path="/manga" exact>
-                    <Manga mangaProducts={mangaProducts} onAddToCart={handleAddToCart} handleUpdateCartQty />
+                    <Manga
+                      mangaProducts={mangaProducts}
+                      onAddToCart={handleAddToCart}
+                      handleUpdateCartQty
+                    />
                   </Route>
                   <Route path="/fiction" exact>
-                    <Fiction fictionProducts={fictionProducts} onAddToCart={handleAddToCart} handleUpdateCartQty />
+                    <Fiction
+                      fictionProducts={fictionProducts}
+                      onAddToCart={handleAddToCart}
+                      handleUpdateCartQty
+                    />
                   </Route>
                   <Route path="/biography" exact>
-                    <Biography bioProducts={bioProducts} onAddToCart={handleAddToCart} handleUpdateCartQty />
+                    <Biography
+                      bioProducts={bioProducts}
+                      onAddToCart={handleAddToCart}
+                      handleUpdateCartQty
+                    />
                   </Route>
                 </Switch>
               </Suspense>
