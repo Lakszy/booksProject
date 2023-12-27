@@ -25,10 +25,8 @@ const Signup = () => {
 
     try {
       setLoading(true);
-
       // Create a new user in Firebase
       await createUserWithEmailAndPassword(auth, email, password);
-
       // Redirect to the desired route after successful signup
       history.push("/products");
     } catch (error) {
