@@ -1,50 +1,48 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
+import { auth } from "../../lib";
 
 const Login = () => {
   const history = useHistory();
-
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isSignup, setIsSignup] = useState(false);
 
-  const handleLogin = () => {
-    if (!username || !password) {
-      setError("Please enter both username and password.");
+  const handleAuthAction = async () => {
+    if (!email || !password) {
+      setError("Please enter both email and password.");
       return;
     }
-    const validUsername = "user123";
-    const validPassword = "password123";
-
-    if (username === validUsername && password === validPassword) {
-      localStorage.setItem("authToken", "yourAuthToken");
-      history.push("/products");
-    } else {
-      setError("Invalid username or password.");
+    try {
+      if (isSignup) {
+        await auth.createUserWithEmailAndPassword(email, password);
+        history.push("/login");
+      } else {
+        await auth.signInWithEmailAndPassword(email, password);
+        localStorage.setItem("authToken", "yourAuthToken");
+        history.push("/products");
+      }
+    } catch (error) {
+      setError(
+        isSignup ? "Error creating user: " : "Invalid email or password."
+      );
     }
   };
-
   return (
     <div style={styles.loginBox}>
-      <div style={styles.illustrationWrapper}>
-        <img
-          style={styles.illustrationImage}
-          src="https://cdn.pixabay.com/photo/2023/08/08/17/57/ai-generated-8177911_1280.jpg"
-          alt="Login"
-        />
-      </div>
       <div style={styles.loginForm}>
-        <h2 style={styles.header}>Login</h2>
+        <h2 style={styles.header}>{isSignup ? "Sign Up" : "Login"}</h2>
         <div style={styles.inputContainer}>
-          <label style={styles.label} htmlFor="username">
-            Username:
+          <label style={styles.label} htmlFor="email">
+            Email:
           </label>
           <input
             style={styles.input}
-            type="text"
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
         <div style={styles.inputContainer}>
@@ -61,10 +59,15 @@ const Login = () => {
         </div>
         {error && <p style={styles.error}>{error}</p>}
         <div style={styles.buttonContainer}>
-          <button style={styles.button} onClick={handleLogin}>
-            Login 123
+          <button style={styles.button} onClick={handleAuthAction}>
+            {isSignup ? "Sign Up" : "Login"}
           </button>
         </div>
+        <p onClick={() => setIsSignup(!isSignup)}>
+          {isSignup
+            ? "Already have an account? Login"
+            : "Don't have an account? Sign Up"}
+        </p>
       </div>
     </div>
   );
@@ -80,25 +83,14 @@ const styles = {
     overflow: "hidden",
     margin: "0 auto",
     borderRadius: "12px",
-    marginTop: '100px'
+    marginTop: "100px",
   },
   loginForm: {
     flex: "1 0 100%",
     maxWidth: "480px",
     width: "100%",
     padding: "60px",
-    marginBottom: '80px'
-  },
-  illustrationWrapper: {
-    display: "flex",
-    alignItems: "flex-end",
-    maxWidth: "800px",
-    minHeight: "10%",
-  },
-  illustrationImage: {
-    display: "block",
-    width: "100%",
-    height: '100%',
+    marginBottom: "80px",
   },
   header: {
     fontSize: "24px",
@@ -137,4 +129,5 @@ const styles = {
     boxSizing: "border-box",
   },
 };
+
 export default Login;
