@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { auth } from "../../lib";
 import loginStyles from "../../styles";
 
@@ -25,19 +25,20 @@ const Signup = () => {
 
     try {
       setLoading(true);
-      // Check if the email is already in use
-      const existingUser = await signInWithEmailAndPassword(auth, email, password);
-      if (existingUser) {
-        setError("Email is already in use. Please use a different email or log in.");
-        return;
-      }
 
-      // If the email is not in use, proceed with creating a new user
+      // Create a new user in Firebase
       await createUserWithEmailAndPassword(auth, email, password);
+
+      // Redirect to the desired route after successful signup
       history.push("/products");
     } catch (error) {
-      console.error("Error creating user:", error);
-      setError("Error creating user. Please try again.");
+      // Handle specific error messages
+      if (error.code === "auth/email-already-in-use") {
+        setError("Email is already in use. Please use a different email or log in.");
+      } else {
+        console.error("Error creating user:", error);
+        setError("Error creating user. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -98,5 +99,4 @@ const Signup = () => {
     </div>
   );
 };
-
 export default Signup;

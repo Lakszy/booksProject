@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../lib";
 import loginStyles from "../../styles";
 
@@ -11,7 +12,7 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      await auth.signInWithEmailAndPassword(auth,email, password);
+      await signInWithEmailAndPassword(auth, email, password);
       history.push("/products");
     } catch (error) {
       console.error("Error logging in:", error);
