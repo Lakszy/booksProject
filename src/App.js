@@ -2,20 +2,20 @@ import React, { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { CssBaseline } from "@material-ui/core";
 import { commerce } from "./lib/commerce";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { useSelector } from "react-redux";
 import loadingImg from "./assets/loader.gif";
 import Navbar from "./components/Navbar/Navbar";
 import Login from "./components/Login/Login";
 import Signup from "./components/SignUp/SignUp";
+import Products from "./components/Products/Products";
+import Cart from "./components/Cart/Cart";
+import Checkout from "./components/CheckoutForm/Checkout/Checkout";
+import ProductView from "./components/ProductView/ProductView";
+import Manga from "./components/Manga/Manga";
+import Fiction from "./components/Fiction/Fiction";
+import Biography from "./components/Bio/Biography";
+import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
 
-const Products = lazy(() => import("./components/Products/Products"));
-const Cart = lazy(() => import("./components/Cart/Cart"));
-const Checkout = lazy(() =>
-  import("./components/CheckoutForm/Checkout/Checkout")
-);
-const ProductView = lazy(() => import("./components/ProductView/ProductView"));
-const Manga = lazy(() => import("./components/Manga/Manga"));
-const Fiction = lazy(() => import("./components/Fiction/Fiction"));
-const Biography = lazy(() => import("./components/Bio/Biography"));
 
 const App = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -27,6 +27,7 @@ const App = () => {
   const [cart, setCart] = useState({});
   const [order, setOrder] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
+  const {isLoggedIn} = useSelector((state) => state.auth);
 
   const fetchProducts = async () => {
     const { data } = await commerce.products.list();
@@ -93,18 +94,19 @@ const App = () => {
 
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
-  const MemoizedProducts = useMemo(
-    () => (
+
+  const ProductComp = () => {
+    if(!products.length) return <div style={{paddingTop: 100}} >Loading...</div>
+    return (
       <Products
-        key={products.id}
+        key={products?.id}
         products={products}
         featureProducts={featureProducts}
         onAddToCart={handleAddToCart}
         handleUpdateCartQty={handleUpdateCartQty}
       />
-    ),
-    [products, featureProducts, handleAddToCart, handleUpdateCartQty]
-  );
+    )
+  }
 
   return (
     <div>
@@ -119,13 +121,16 @@ const App = () => {
               />
               <Suspense fallback={<div>Loading...</div>}>
                 <Switch>
-                  <Route path="/" exact>
-                    <Login />
+                  <Route path="/" exact >
+                    {isLoggedIn ? <ProductComp /> : <Login />}
                   </Route>
-                  <Route path="/signup" exact>
+                  <Route path="/signup" exact render={() => isLoggedIn && <Redirect to="/" />} >
                     <Signup />
                   </Route>
-                  <Route path="/products">{MemoizedProducts}</Route>
+                  <Route path="/products">  
+                    <ProductComp />
+                  </Route>
+
                   <Route exact path="/cart">
                     <Cart
                       cart={cart}
@@ -166,6 +171,7 @@ const App = () => {
                       handleUpdateCartQty
                     />
                   </Route>
+                 
                 </Switch>
               </Suspense>
             </div>

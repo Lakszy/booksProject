@@ -3,17 +3,23 @@ import { useHistory } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../lib";
 import loginStyles from "../../styles";
+import { useDispatch } from "react-redux";
+import { loginReducer } from "../../Store/Auth";
 
 const Login = () => {
   const history = useHistory();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const dispatch = useDispatch();
 
   const handleLogin = async () => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      history.push("/products");
+     const resp = await signInWithEmailAndPassword(auth, email, password);
+     if(!!resp.user){
+       dispatch(loginReducer(resp.user))
+       history.push("/products");
+     }
     } catch (error) {
       console.error("Error logging in:", error);
       setError("Invalid email or password. Please try again.");
