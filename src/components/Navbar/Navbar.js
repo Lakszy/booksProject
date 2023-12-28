@@ -6,13 +6,20 @@ import {
   Badge,
   Typography,
 } from "@material-ui/core";
-import { ShoppingCart } from "@material-ui/icons";
+import { ShoppingCart, ExitToApp } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 import logo from "../../assets/circles.svg";
 import useStyles from "./styles";
+import { useDispatch } from "react-redux";
+import { logoutReducer } from "../../Store/Auth"
 
 const Navbar = ({ totalItems }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    dispatch(logoutReducer());
+  }
 
   return (
     <div>
@@ -45,6 +52,15 @@ const Navbar = ({ totalItems }) => {
               <Badge badgeContent={totalItems} color="secondary" overlap="rectangular">
                 <ShoppingCart />
               </Badge>
+            </IconButton>
+          </div>
+          <div className={classes.button}>
+            <IconButton
+              onClick={handleLogout}
+              aria-label="Show cart items"
+              color="inherit"
+            >
+              <ExitToApp />
             </IconButton>
           </div>
         </Toolbar>
