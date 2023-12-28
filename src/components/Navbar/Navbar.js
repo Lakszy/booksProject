@@ -7,7 +7,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { ShoppingCart, ExitToApp } from "@material-ui/icons";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import logo from "../../assets/circles.svg";
 import useStyles from "./styles";
 import { useDispatch } from "react-redux";
@@ -16,9 +16,11 @@ import { logoutReducer } from "../../Store/Auth"
 const Navbar = ({ totalItems }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const handleLogout = () => {
     dispatch(logoutReducer());
+    history.push("/");
   }
 
   return (
