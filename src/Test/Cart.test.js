@@ -44,16 +44,14 @@ test('calls onUpdateCartQty when "+" button is clicked', () => {
   // Find the "+" button and click it
   fireEvent.click(screen.getByRole('button', { name: /\+/i }));
 
-  // Check if onUpdateCartQty is called with the correct arguments
   expect(mockUpdateCartQty).toHaveBeenCalledWith('1', 3);
 });
 
 test('calls onRemoveFromCart when "Remove" button is clicked', () => {
   render(<CartItem {...mockProps} />);
 
-  // Find the "Remove" button and click it
   fireEvent.click(screen.getByRole('button', { name: /remove/i }));
 
-  // Check if onRemoveFromCart is called with the correct argument
+  
   expect(mockRemoveFromCart).toHaveBeenCalledWith('1');
 });

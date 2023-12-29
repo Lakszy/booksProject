@@ -3,7 +3,7 @@ import { Grid, InputAdornment, Input } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import Product from "./Product/Product.js";
 import useStyles from "./styles";
-import logo1 from "../../assets/Bookshop.gif";
+// import logo1 from "../../assets/Bookshop.gif";
 import "../ProductView/style.css";
 import { Link } from "react-router-dom";
 import mangaBg from "../../assets/maxresdefault.jpg";
@@ -27,7 +27,7 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
     <main className={classes.mainPage}>
       <div className={classes.toolbar} />
       <div className={classes.hero}>
-        <img className={classes.heroImg} src={logo1}/>
+        {/* <img className={classes.heroImg} src={logo1}/> */}
 
         <div className={classes.heroCont}>
           <h1 className={classes.heroHeader}>BoOKS BOoKS!</h1>

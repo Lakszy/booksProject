@@ -48,7 +48,11 @@
     ]
   },
   "jest": {
-    "testEnvironment": "jsdom"
+    "testEnvironment": "jsdom",
+    "moduleNameMapper": {
+      "\\.(gif|ttf|eot|svg|png)$": "<rootDir>/path/to/identity-obj-proxy.js"
+    }
+    
   },
   "description": "",
   "main": "index.js",
