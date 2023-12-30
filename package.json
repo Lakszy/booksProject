@@ -27,7 +27,8 @@
     "react-stripe-elements": "^6.1.2",
     "redux": "^5.0.1",
     "redux-persist": "^6.0.0",
-    "semantic-ui-react": "^2.0.1"
+    "semantic-ui-react": "^2.0.1",
+    "text-encoding": "^0.7.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -52,7 +53,6 @@
     "moduleNameMapper": {
       "\\.(gif|ttf|eot|svg|png)$": "<rootDir>/path/to/identity-obj-proxy.js"
     }
-    
   },
   "description": "",
   "main": "index.js",
