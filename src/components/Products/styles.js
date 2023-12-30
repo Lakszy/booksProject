@@ -1,5 +1,4 @@
 import { makeStyles } from "@material-ui/core/styles";
-
 export default makeStyles((theme) => ({
   toolbar: theme.mixins.toolbar,
   mainPage: { flexGrow: 1, overflowX: "hidden", overflowY: "hidden" },

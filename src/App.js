@@ -3,7 +3,6 @@ import { CssBaseline } from "@material-ui/core";
 import { commerce } from "./lib/commerce";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
-import loadingImg from "./assets/loader.gif";
 import Navbar from "./components/Navbar/Navbar";
 import Login from "./components/Login/Login";
 import Signup from "./components/SignUp/SignUp";
@@ -179,7 +178,7 @@ const App = () => {
         </>
       ) : (
         <div className="loader">
-          <img src={loadingImg} alt="Loading" />
+          WAIT.....
         </div>
       )}
     </div>
