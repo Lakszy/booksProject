@@ -26,7 +26,7 @@ const Cart = memo(({ cart, onUpdateCartQty, onRemoveFromCart, onEmptyCart }) => 
             <CartItem
               item={lineItem}
               onUpdateCartQty={() => onUpdateCartQty(lineItem.id, lineItem.quantity + 1)}
-              onRemoveFromCart={() => onRemoveFromCart(lineItem.id)}
+              onRemoveFromCart={() => onRemoveFromCart(lineItem.id, lineItem.quantity - 1)}
             />
           </Grid>
         ))}

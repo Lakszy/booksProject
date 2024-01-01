@@ -98,7 +98,7 @@ const App = () => {
     if(!products.length) return <div style={{paddingTop: 100}} >Loading...</div>
     return (
       <Products
-        key={products?.id}
+        key={products.id}
         products={products}
         featureProducts={featureProducts}
         onAddToCart={handleAddToCart}

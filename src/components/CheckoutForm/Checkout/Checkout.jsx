@@ -5,9 +5,10 @@ import { Link, useHistory } from 'react-router-dom';
 import { commerce } from '../../../lib/commerce';
 import AddressForm from '../AddressForm';
 import PaymentForm from '../PaymentForm';
+import OrderHistory from '../orderHistory';
 import useStyles from './styles';
 
-const steps = ['Shipping address', 'Payment details'];
+const steps = ['Shipping address', 'Payment details', 'Order history'];
 
 const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
   const [checkoutToken, setCheckoutToken] = useState(null);
@@ -24,7 +25,6 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
       const generateToken = async () => {
         try {
           const token = await commerce.checkout.generateToken(cart.id, { type: 'cart' });
-
           setCheckoutToken(token);
         } catch {
           if (activeStep !== steps.length) history.push('/');
@@ -33,11 +33,10 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
 
       generateToken();
     }
-  }, [cart]);
+  }, [cart, activeStep, history]);
 
   const test = (data) => {
     setShippingData(data);
-
     nextStep();
   };
 
@@ -67,9 +66,18 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
     );
   }
 
-  const Form = () => (activeStep === 0
-    ? <AddressForm checkoutToken={checkoutToken} nextStep={nextStep} setShippingData={setShippingData} test={test} />
-    : <PaymentForm checkoutToken={checkoutToken} nextStep={nextStep} backStep={backStep} shippingData={shippingData} onCaptureCheckout={onCaptureCheckout} />);
+  const Form = () => {
+    switch (activeStep) {
+      case 0:
+        return <AddressForm checkoutToken={checkoutToken} nextStep={nextStep} setShippingData={setShippingData} test={test} />;
+      case 1:
+        return <PaymentForm checkoutToken={checkoutToken} nextStep={nextStep} backStep={backStep} shippingData={shippingData} onCaptureCheckout={onCaptureCheckout} />;
+      case 2:
+        return <OrderHistory />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <>

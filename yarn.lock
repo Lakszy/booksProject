@@ -1159,7 +1159,7 @@
   resolved "https://registry.npmjs.org/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@chec/commerce.js@^2.3.0-beta1":
+"@chec/commerce.js@^2.8.0":
   version "2.8.0"
   resolved "https://registry.npmjs.org/@chec/commerce.js/-/commerce.js-2.8.0.tgz"
   integrity sha512-OPBphT/hU33iDp52zzYOqz/oSXLhEuhGVUg2UNvYtmBW4eCNmtsM0dqW0+wu+6K0d6fZojurCBdVQMKb2R7l3g==
