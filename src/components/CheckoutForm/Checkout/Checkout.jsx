@@ -8,7 +8,7 @@ import PaymentForm from '../PaymentForm';
 import OrderHistory from '../orderHistory';
 import useStyles from './styles';
 
-const steps = ['Shipping address', 'Payment details', 'Order history'];
+const steps = ['Shipping address', 'Payment details', 'Order Details'];
 
 const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
   const [checkoutToken, setCheckoutToken] = useState(null);
@@ -25,6 +25,7 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
       const generateToken = async () => {
         try {
           const token = await commerce.checkout.generateToken(cart.id, { type: 'cart' });
+          console.log('CHECKOUT TOKEN', token);
           setCheckoutToken(token);
         } catch {
           if (activeStep !== steps.length) history.push('/');
@@ -93,7 +94,7 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
               </Step>
             ))}
           </Stepper>
-          {activeStep === steps.length ? <Confirmation /> : checkoutToken && <Form />}
+          {activeStep === steps.length ? <Confirmation /> : !!checkoutToken && <Form />}
         </Paper>
       </main>
     </>

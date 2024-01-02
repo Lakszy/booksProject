@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { CssBaseline } from "@material-ui/core";
 import { commerce } from "./lib/commerce";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import { useSelector } from "react-redux";
 import Navbar from "./components/Navbar/Navbar";
 import Login from "./components/Login/Login";
 import Signup from "./components/SignUp/SignUp";
@@ -14,24 +13,61 @@ import Manga from "./components/Manga/Manga";
 import Fiction from "./components/Fiction/Fiction";
 import Biography from "./components/Bio/Biography";
 import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
+import { useDispatch, useSelector } from "react-redux";
+import { setCartReducer } from "./Store/Ecom";
 
 
-const App = () => {
-  const [mobileOpen, setMobileOpen] = useState(false);
+const ProductComp = ({handleAddToCart,handleUpdateCartQty}) => {
   const [products, setProducts] = useState([]);
-  const [mangaProducts, setMangaProducts] = useState([]);
-  const [fictionProducts, setFictionProducts] = useState([]);
-  const [bioProducts, setBioProducts] = useState([]);
   const [featureProducts, setFeatureProducts] = useState([]);
-  const [cart, setCart] = useState({});
-  const [order, setOrder] = useState({});
-  const [errorMessage, setErrorMessage] = useState("");
-  const {isLoggedIn} = useSelector((state) => state.auth);
 
   const fetchProducts = async () => {
     const { data } = await commerce.products.list();
     setProducts(data);
   };
+
+  const fetchCategoryProducts = async (category, stateSetter) => {
+    const { data } = await commerce.products.list({
+      category_slug: [category],
+    });
+    stateSetter(data);
+  };
+
+  useEffect(() => {
+    fetchProducts();
+    fetchCategoryProducts("featured", setFeatureProducts);
+  }, []);
+
+  if (!products.length) return <div style={{ paddingTop: 100 }} >Loading...</div>
+  return (
+    <Products
+      key={products.id}
+      products={products}
+      featureProducts={featureProducts}
+      onAddToCart={handleAddToCart}
+      handleUpdateCartQty={handleUpdateCartQty}
+    />
+  )
+}
+
+
+
+const App = () => {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mangaProducts, setMangaProducts] = useState([]);
+  const [fictionProducts, setFictionProducts] = useState([]);
+  const [bioProducts, setBioProducts] = useState([]);
+  const [order, setOrder] = useState({});
+  const [errorMessage, setErrorMessage] = useState("");
+  const {isLoggedIn} = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
+  const {cart} = useSelector((state) => state.ecom);
+
+  const setCart = (payload) => {
+    console.log('BEFORE SETTING CART', payload)
+    dispatch(setCartReducer(payload));
+  }
 
   const fetchCategoryProducts = async (category, stateSetter) => {
     const { data } = await commerce.products.list({
@@ -83,9 +119,7 @@ const App = () => {
   };
 
   useEffect(() => {
-    fetchProducts();
     fetchCategoryProducts("manga", setMangaProducts);
-    fetchCategoryProducts("featured", setFeatureProducts);
     fetchCategoryProducts("fiction", setFictionProducts);
     fetchCategoryProducts("biography", setBioProducts);
     fetchCart();
@@ -94,22 +128,10 @@ const App = () => {
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
 
-  const ProductComp = () => {
-    if(!products.length) return <div style={{paddingTop: 100}} >Loading...</div>
-    return (
-      <Products
-        key={products.id}
-        products={products}
-        featureProducts={featureProducts}
-        onAddToCart={handleAddToCart}
-        handleUpdateCartQty={handleUpdateCartQty}
-      />
-    )
-  }
-
+ 
   return (
     <div>
-      {products.length > 0 ? (
+    
         <>
           <Router>
             <div style={{ display: "flex" }}>
@@ -121,13 +143,20 @@ const App = () => {
               <Suspense fallback={<div>Loading...</div>}>
                 <Switch>
                   <Route path="/" exact >
-                    {isLoggedIn ? <ProductComp /> : <Login />}
+                    {isLoggedIn ? 
+                    <ProductComp 
+                    handleAddToCart={handleAddToCart}  
+                    handleUpdateCartQty={handleUpdateCartQty} />
+                     : 
+                    <Login />}
                   </Route>
                   <Route path="/signup" exact render={() => isLoggedIn && <Redirect to="/" />} >
                     <Signup />
                   </Route>
                   <Route path="/products">  
-                    <ProductComp />
+                   <ProductComp
+                    handleAddToCart={handleAddToCart}
+                    handleUpdateCartQty={handleUpdateCartQty} />
                   </Route>
 
                   <Route exact path="/cart">
@@ -176,11 +205,7 @@ const App = () => {
             </div>
           </Router>
         </>
-      ) : (
-        <div className="loader">
-          WAIT.....
-        </div>
-      )}
+      ) 
     </div>
   );
 };
