@@ -15,7 +15,6 @@ import Fiction from "./components/Fiction/Fiction";
 import Biography from "./components/Bio/Biography";
 import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
 
-
 const App = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [products, setProducts] = useState([]);
@@ -26,7 +25,7 @@ const App = () => {
   const [cart, setCart] = useState({});
   const [order, setOrder] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
-  const {isLoggedIn} = useSelector((state) => state.auth);
+  const { isLoggedIn } = useSelector((state) => state.auth);
 
   const fetchProducts = async () => {
     const { data } = await commerce.products.list();
@@ -93,9 +92,9 @@ const App = () => {
 
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
-
   const ProductComp = () => {
-    if(!products.length) return <div style={{paddingTop: 100}} >Loading...</div>
+    if (!products.length)
+      return <div style={{ paddingTop: 100 }}>Loading...</div>;
     return (
       <Products
         key={products?.id}
@@ -104,8 +103,8 @@ const App = () => {
         onAddToCart={handleAddToCart}
         handleUpdateCartQty={handleUpdateCartQty}
       />
-    )
-  }
+    );
+  };
 
   return (
     <div>
@@ -120,13 +119,17 @@ const App = () => {
               />
               <Suspense fallback={<div>Loading...</div>}>
                 <Switch>
-                  <Route path="/" exact >
+                  <Route path="/" exact>
                     {isLoggedIn ? <ProductComp /> : <Login />}
                   </Route>
-                  <Route path="/signup" exact render={() => isLoggedIn && <Redirect to="/" />} >
+                  <Route
+                    path="/signup"
+                    exact
+                    render={() => isLoggedIn && <Redirect to="/" />}
+                  >
                     <Signup />
                   </Route>
-                  <Route path="/products">  
+                  <Route path="/products">
                     <ProductComp />
                   </Route>
 
@@ -170,16 +173,13 @@ const App = () => {
                       handleUpdateCartQty
                     />
                   </Route>
-                 
                 </Switch>
               </Suspense>
             </div>
           </Router>
         </>
       ) : (
-        <div className="loader">
-          WAIT.....
-        </div>
+        <div className="loader">WAIT.....</div>
       )}
     </div>
   );
