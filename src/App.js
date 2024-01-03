@@ -15,14 +15,26 @@ import Biography from "./components/Bio/Biography";
 import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
 import { useDispatch, useSelector } from "react-redux";
 import { setCartReducer } from "./Store/Ecom";
+import {doc,collection,getDocs,setDoc} from 'firebase/firestore';
+import {db} from './lib/firebase';
 
 
 const ProductComp = ({handleAddToCart,handleUpdateCartQty}) => {
   const [products, setProducts] = useState([]);
   const [featureProducts, setFeatureProducts] = useState([]);
 
+  const departmentRef = collection(db, 'Orders');
+  
   const fetchProducts = async () => {
     const { data } = await commerce.products.list();
+    // const docSnap = await getDocs(departmentRef);
+    // console.log('DOC SNAP', docSnap.docs.map(doc => doc.data()));
+    // setDoc(doc(departmentRef, 'Department1234'), {
+    //   name: 'Department1234',
+    //   description: 'department hai bhaiya',
+    //   image: 'Department1234',
+    //   slug: 'Department1234',
+    // })
     setProducts(data);
   };
 

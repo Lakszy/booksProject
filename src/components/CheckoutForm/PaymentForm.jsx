@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography, Button, Divider } from '@material-ui/core';
 import Review from './Review';
-import { firestore } from '../../lib/firebase'; 
+import { db } from '../../lib/firebase'; 
 import { collection } from 'firebase/firestore';
 
 const PaymentForm = ({ checkoutToken, nextStep, backStep, shippingData, onCaptureCheckout }) => {
@@ -33,7 +33,7 @@ const PaymentForm = ({ checkoutToken, nextStep, backStep, shippingData, onCaptur
    
   
     try {
-      const orderRef = collection(firestore,'orders', orderData)
+      const orderRef = collection(db,'orders', orderData)
       console.log('Order stored in Firestore with ID:', orderRef.id);
       
       onCaptureCheckout(checkoutToken.id, orderData);
