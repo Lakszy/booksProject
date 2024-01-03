@@ -118,7 +118,13 @@ const App = () => {
     }
   };
 
+  const handleLogin = () => {
+    commerce.customer.login('binova1245@gmail.com', 'http://localhost:3000/login/callback').then((token) => console.log('TOKEN GOES HERE',token));
+
+  }
+
   useEffect(() => {
+    handleLogin();
     fetchCategoryProducts("manga", setMangaProducts);
     fetchCategoryProducts("fiction", setFictionProducts);
     fetchCategoryProducts("biography", setBioProducts);
