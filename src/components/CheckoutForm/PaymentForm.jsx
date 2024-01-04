@@ -3,8 +3,11 @@ import { Typography, Button, Divider } from '@material-ui/core';
 import Review from './Review';
 import { doc, setDoc } from "firebase/firestore";
 import { db } from '../../lib/firebase'; 
+import { useDispatch } from 'react-redux';
 
 const PaymentForm = ({ checkoutToken, nextStep, backStep, shippingData, onCaptureCheckout }) => {
+  const disptach = useDispatch();
+
   const handlePayOnDelivery = async () => {
     const orderId = new Date().toISOString();
     const orderData = {
@@ -32,6 +35,7 @@ const PaymentForm = ({ checkoutToken, nextStep, backStep, shippingData, onCaptur
     };
     try {
       await setDoc(doc(db, 'orders', orderId), orderData);
+      disptach()
       onCaptureCheckout(checkoutToken.id, orderData);
       nextStep();
     } catch (error) {
