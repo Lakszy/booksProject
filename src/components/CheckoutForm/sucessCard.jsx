@@ -5,7 +5,10 @@ import {
   Paper,
   Box,
   makeStyles,
+  Button
 } from "@material-ui/core";
+import { Link } from 'react-router-dom';
+
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import { commerce } from "../../lib/commerce";
 import Review from "./Review";
@@ -89,23 +92,36 @@ const OrderConfirmation = ({ checkoutToken }) => {
   const [orderDetails, setOrderDetails] = useState(null);
 
   useEffect(() => {
-    commerce.checkout
-      .capture("YOUR_ORDER_ID", {})
-      .then((order) => {
-        setOrderDetails({
-          orderNumber: order.order_number,
+    if (checkoutToken) {
+      commerce.checkout
+        .capture(checkoutToken.id, {})
+        .then((order) => {
+          setOrderDetails({
+            orderNumber: order.order_number,
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching order details:", error);
         });
-      })
-      .catch((error) => {
-        console.error("Error fetching order details:", error);
-      });
-  }, []);
+    }
+  }, [checkoutToken]);
+  
 
   return (
-    <div>
-      <FancySuccessCard />
-      <Review checkoutToken={checkoutToken} />
-    </div>
+    <>
+      <div>
+        <FancySuccessCard />
+        <Review checkoutToken={checkoutToken} />
+      </div>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <Button component={Link} variant="outlined" to="/">
+          Back to Home
+        </Button>
+        <Button component={Link} color="primary" to="/ordershistory" variant="contained">
+          Orders
+        </Button>
+      </div>
+    </>
   );
 };
 

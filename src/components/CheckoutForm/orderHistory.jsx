@@ -1,18 +1,12 @@
 import React, { useState, useEffect } from "react";
 import {
   Typography,
-  Table,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Paper,
   makeStyles,
   Card,
   CardContent,
   CardMedia,
   Container,
+  CircularProgress,
 } from "@material-ui/core";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "../../lib/firebase";
@@ -32,20 +26,27 @@ const useStyles = makeStyles((theme) => ({
   card: {
     display: "flex",
     marginBottom: theme.spacing(2),
-    width: '100%',
+    width: "100%",
   },
   cardContent: {
     flex: "1 0 auto",
-    width: '100%',
+    width: "100%",
   },
   cardMedia: {
     width: 220,
+  },
+  loading: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    marginTop: theme.spacing(3),
   },
 }));
 
 const OrderHistory = () => {
   const classes = useStyles();
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchOrderHistory = async () => {
     try {
@@ -55,11 +56,12 @@ const OrderHistory = () => {
         ...doc.data(),
       }));
       setOrders(ordersData);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching order history:", error);
+      setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchOrderHistory();
   }, []);
@@ -77,12 +79,38 @@ const OrderHistory = () => {
     return totalAmount.toFixed(2);
   };
 
+  const calculateTotalQuantity = (order) => {
+    if (!order.line_items || order.line_items.length === 0) {
+      return "N/A";
+    }
+
+    const totalQuantity = order.line_items.reduce(
+      (accumulator, item) => accumulator + parseInt(item.quantity),
+      0
+    );
+
+    return totalQuantity;
+  };
+
   return (
     <Container maxWidth="lg" className={classes.root}>
-      <Typography variant="h5" style={{marginTop:"30px"}} gutterBottom>
+      <Typography
+        variant="h5"
+        style={{
+          marginTop: "30px",
+          marginBottom: "20px",
+          fontWeight: "bold",
+          color: "#333",
+        }}
+      >
         Order History
       </Typography>
-      {orders.length === 0 ? (
+      {loading ? (
+        <div className={classes.loading}>
+          <Typography variant="h6">Loading Order History...</Typography>
+          <CircularProgress />
+        </div>
+      ) : orders.length === 0 ? (
         <Typography variant="h6" gutterBottom>
           No orders found.
         </Typography>
@@ -102,10 +130,11 @@ const OrderHistory = () => {
                   Order ID: {order.line_items[0].product_name}
                 </Typography>
                 <Typography variant="body1" gutterBottom>
-                  Date: {new Date(order.created).toLocaleDateString()}
+                  Date: {new Date(order.id).toDateString()}
                 </Typography>
                 <Typography variant="body1" gutterBottom>
-                  Status: {order.status}
+                  Status: {order.status} - Total Quantity:{" "}
+                  {calculateTotalQuantity(order)}
                 </Typography>
                 <Typography variant="body1" gutterBottom>
                   Total: {calculateTotalAmount(order)}

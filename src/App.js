@@ -49,9 +49,7 @@ const ProductComp = ({ handleAddToCart, handleUpdateCartQty }) => {
     fetchProducts();
     fetchCategoryProducts("featured", setFeatureProducts);
   }, []);
-
-  if (!products.length)
-    return <div style={{ paddingTop: 100 }}>Loading...</div>;
+  
   return (
     <Products
       key={products.id}

@@ -62,7 +62,6 @@ const FancySuccessCard = ({ orderDetails }) => {
   const classes = useStyles();
 
   return (
-    <Fade in={true} timeout={1000}>
       <Container className={classes.root}>
         <Paper className={classes.card}>
           <Box className={classes.checkmarkContainer}>
@@ -76,7 +75,6 @@ const FancySuccessCard = ({ orderDetails }) => {
           </Typography>
         </Paper>
       </Container>
-    </Fade>
   );
 };
 

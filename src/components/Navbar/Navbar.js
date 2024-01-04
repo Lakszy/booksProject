@@ -76,11 +76,10 @@ const Navbar = ({ totalItems }) => {
             <Badge
               color="secondary"
               overlap="rectangular"
-              style={{ paddingLeft: 4}}
+              style={{ paddingLeft: 4, cursor: "pointer" }}
               onClick={handleOrders}
-              >
+            >
               <BsBoxSeam size={22} />
-            
             </Badge>
           </div>
         </Toolbar>
