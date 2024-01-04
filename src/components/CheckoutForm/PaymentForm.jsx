@@ -1,9 +1,12 @@
 import React from 'react';
 import { Typography, Button, Divider } from '@material-ui/core';
 import Review from './Review';
+import { doc, setDoc } from "firebase/firestore";
+import { db } from '../../lib/firebase'; 
 
 const PaymentForm = ({ checkoutToken, nextStep, backStep, shippingData, onCaptureCheckout }) => {
-  const handlePayOnDelivery = () => {
+  const handlePayOnDelivery = async () => {
+    const orderId = new Date().toISOString();
     const orderData = {
       line_items: checkoutToken.live.line_items,
       customer: {
@@ -27,10 +30,15 @@ const PaymentForm = ({ checkoutToken, nextStep, backStep, shippingData, onCaptur
         },
       },
     };
-
-    onCaptureCheckout(checkoutToken.id, orderData);
-    nextStep();
+    try {
+      await setDoc(doc(db, 'orders', orderId), orderData);
+      onCaptureCheckout(checkoutToken.id, orderData);
+      nextStep();
+    } catch (error) {
+      console.error('Error storing order in Firestore:', error);
+    }
   };
+  
 
   return (
     <>
@@ -40,7 +48,7 @@ const PaymentForm = ({ checkoutToken, nextStep, backStep, shippingData, onCaptur
         Payment method
       </Typography>
       <Typography variant="body1" gutterBottom>
-        Pay on Delivery
+        Pay on Delivery{checkoutToken.id}
       </Typography>
       <br />
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
