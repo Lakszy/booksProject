@@ -1,15 +1,10 @@
 import React from "react";
 import { Typography, Button, Divider } from "@material-ui/core";
-import {
-  Elements,
-  CardElement,
-  ElementsConsumer,
-} from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
-
 import Review from "./Review";
-
-const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../../lib/firebase";
+import { useDispatch } from "react-redux";
+import { emptyCart } from "../../Store/Ecom";
 
 const PaymentForm = ({
   checkoutToken,
@@ -18,48 +13,41 @@ const PaymentForm = ({
   shippingData,
   onCaptureCheckout,
 }) => {
-  const handleSubmit = async (event, elements, stripe) => {
-    event.preventDefault();
+  const dispatch = useDispatch();
 
-    if (!stripe || !elements) return;
-
-    const cardElement = elements.getElement(CardElement);
-
-    const { error, paymentMethod } = await stripe.createPaymentMethod({
-      type: "card",
-      card: cardElement,
-    });
-
-    if (error) {
-      console.log("[error]", error);
-    } else {
-      const orderData = {
-        line_items: checkoutToken.live.line_items,
-        customer: {
-          firstname: shippingData.firstName,
-          lastname: shippingData.lastName,
-          email: shippingData.email,
+  const handlePayOnDelivery = async () => {
+    const orderId = new Date().toISOString();
+    const orderData = {
+      line_items: checkoutToken.live.line_items,
+      customer: {
+        firstname: shippingData.firstName,
+        lastname: shippingData.lastName,
+        email: shippingData.email,
+      },
+      shipping: {
+        name: "International",
+        street: shippingData.address1,
+        town_city: shippingData.city,
+        county_state: shippingData.shippingSubdivision,
+        postal_zip_code: shippingData.zip,
+        country: shippingData.shippingCountry,
+      },
+      fulfillment: { shipping_method: shippingData.shippingOption },
+      payment: {
+        gateway: "manual",
+        manual: {
+          id: "pay_on_delivery",
         },
-        shipping: {
-          name: "International",
-          street: shippingData.address1,
-          town_city: shippingData.city,
-          county_state: shippingData.shippingSubdivision,
-          postal_zip_code: shippingData.zip,
-          country: shippingData.shippingCountry,
-        },
-        fulfillment: { shipping_method: shippingData.shippingOption },
-        payment: {
-          gateway: "stripe",
-          stripe: {
-            payment_method_id: paymentMethod.id,
-          },
-        },
-      };
+      },
+    };
 
+    try {
+      await setDoc(doc(db, "orders", orderId), orderData);
+      dispatch(emptyCart()); 
       onCaptureCheckout(checkoutToken.id, orderData);
-
       nextStep();
+    } catch (error) {
+      console.error("Error storing order in Firestore:", error);
     }
   };
 
@@ -70,29 +58,22 @@ const PaymentForm = ({
       <Typography variant="h6" gutterBottom style={{ margin: "20px 0" }}>
         Payment method
       </Typography>
-      <Elements stripe={stripePromise}>
-        <ElementsConsumer>
-          {({ elements, stripe }) => (
-            <form onSubmit={(e) => handleSubmit(e, elements, stripe)}>
-              <CardElement />
-              <br /> <br />
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <Button variant="outlined" onClick={backStep}>
-                  Back
-                </Button>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  disabled={!stripe}
-                  style={{ backgroundColor: "#001524", color: "#FFFF" }}
-                >
-                  Pay {checkoutToken.live.subtotal.formatted_with_symbol}
-                </Button>
-              </div>
-            </form>
-          )}
-        </ElementsConsumer>
-      </Elements>
+      <Typography variant="body1" gutterBottom>
+        Pay on Delivery
+      </Typography>
+      <br />
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <Button variant="outlined" onClick={backStep}>
+          Back
+        </Button>
+        <Button
+          variant="contained"
+          onClick={handlePayOnDelivery}
+          style={{ backgroundColor: "#001524", color: "#FFFF" }}
+        >
+          Pay on Delivery
+        </Button>
+      </div>
     </>
   );
 };
