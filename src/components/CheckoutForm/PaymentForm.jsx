@@ -1,12 +1,19 @@
-import React from 'react';
-import { Typography, Button, Divider } from '@material-ui/core';
-import Review from './Review';
+import React from "react";
+import { Typography, Button, Divider } from "@material-ui/core";
+import Review from "./Review";
 import { doc, setDoc } from "firebase/firestore";
-import { db } from '../../lib/firebase'; 
-import { useDispatch } from 'react-redux';
+import { db } from "../../lib/firebase";
+import { useDispatch } from "react-redux";
+import { emptyCart } from "../../Store/Ecom";
 
-const PaymentForm = ({ checkoutToken, nextStep, backStep, shippingData, onCaptureCheckout }) => {
-  const disptach = useDispatch();
+const PaymentForm = ({
+  checkoutToken,
+  nextStep,
+  backStep,
+  shippingData,
+  onCaptureCheckout,
+}) => {
+  const dispatch = useDispatch();
 
   const handlePayOnDelivery = async () => {
     const orderId = new Date().toISOString();
@@ -18,7 +25,7 @@ const PaymentForm = ({ checkoutToken, nextStep, backStep, shippingData, onCaptur
         email: shippingData.email,
       },
       shipping: {
-        name: 'International',
+        name: "International",
         street: shippingData.address1,
         town_city: shippingData.city,
         county_state: shippingData.shippingSubdivision,
@@ -27,42 +34,42 @@ const PaymentForm = ({ checkoutToken, nextStep, backStep, shippingData, onCaptur
       },
       fulfillment: { shipping_method: shippingData.shippingOption },
       payment: {
-        gateway: 'manual',
+        gateway: "manual",
         manual: {
-          id: 'pay_on_delivery',
+          id: "pay_on_delivery",
         },
       },
     };
+
     try {
-      await setDoc(doc(db, 'orders', orderId), orderData);
-      disptach()
+      await setDoc(doc(db, "orders", orderId), orderData);
+      dispatch(emptyCart()); 
       onCaptureCheckout(checkoutToken.id, orderData);
       nextStep();
     } catch (error) {
-      console.error('Error storing order in Firestore:', error);
+      console.error("Error storing order in Firestore:", error);
     }
   };
-  
 
   return (
     <>
       <Review checkoutToken={checkoutToken} />
       <Divider />
-      <Typography variant="h6" gutterBottom style={{ margin: '20px 0' }}>
+      <Typography variant="h6" gutterBottom style={{ margin: "20px 0" }}>
         Payment method
       </Typography>
       <Typography variant="body1" gutterBottom>
-        Pay on Delivery{checkoutToken.id}
+        Pay on Delivery
       </Typography>
       <br />
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
         <Button variant="outlined" onClick={backStep}>
           Back
         </Button>
         <Button
           variant="contained"
           onClick={handlePayOnDelivery}
-          style={{ backgroundColor: '#001524', color: '#FFFF' }}
+          style={{ backgroundColor: "#001524", color: "#FFFF" }}
         >
           Pay on Delivery
         </Button>
@@ -70,4 +77,5 @@ const PaymentForm = ({ checkoutToken, nextStep, backStep, shippingData, onCaptur
     </>
   );
 };
+
 export default PaymentForm;
