@@ -5,8 +5,9 @@ import { Link, useHistory } from 'react-router-dom';
 import { commerce } from '../../../lib/commerce';
 import AddressForm from '../AddressForm';
 import PaymentForm from '../PaymentForm';
-import OrderHistory from '../orderHistory';
+import OrderHistory from '../orderHistory'; 
 import useStyles from './styles';
+import OrderConfirmation from '../sucessCard';
 
 const steps = ['Shipping address', 'Payment details', 'Order Details'];
 
@@ -56,7 +57,6 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
       <CircularProgress />
     </div>
   ));
-
   if (error) {
     Confirmation = () => (
       <>
@@ -66,7 +66,6 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
       </>
     );
   }
-
   const Form = () => {
     switch (activeStep) {
       case 0:
@@ -74,12 +73,11 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
       case 1:
         return <PaymentForm checkoutToken={checkoutToken} nextStep={nextStep} backStep={backStep} shippingData={shippingData} onCaptureCheckout={onCaptureCheckout} />;
       case 2:
-        return <OrderHistory />;
+        return <OrderConfirmation  checkoutToken={checkoutToken} />; 
       default:
         return null;
     }
   };
-
   return (
     <>
       <CssBaseline />
