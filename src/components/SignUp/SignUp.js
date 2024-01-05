@@ -3,6 +3,8 @@ import { useHistory } from "react-router-dom";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { auth } from "../../lib";
 import loginStyles from "../../styles";
+import { useDispatch } from "react-redux";
+import { loginReducer } from "../../Store/Auth";
 
 const Signup = () => {
   const history = useHistory();
@@ -11,6 +13,7 @@ const Signup = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   const handleSignup = async () => {
     if (!email || !password || !confirmPassword) {
@@ -26,9 +29,11 @@ const Signup = () => {
     try {
       setLoading(true);
       // Create a new user in Firebase
-      await createUserWithEmailAndPassword(auth, email, password);
-      // Redirect to the desired route after successful signup
-      history.push("/products");
+      const resp = await createUserWithEmailAndPassword(auth, email, password);
+      if (!!resp.user) {
+        dispatch(loginReducer(resp.user))
+        history.push("/products");
+      }
     } catch (error) {
       // Handle specific error messages
       if (error.code === "auth/email-already-in-use") {

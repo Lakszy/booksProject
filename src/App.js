@@ -14,10 +14,11 @@ import Fiction from "./components/Fiction/Fiction";
 import Biography from "./components/Bio/Biography";
 import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
 import { useDispatch, useSelector } from "react-redux";
-import { setCartReducer } from "./Store/Ecom";
+import { addToCart, setCartReducer } from "./Store/Ecom";
 import { doc, collection, getDocs, setDoc } from "firebase/firestore";
 import { db } from "./lib/firebase";
 import OrderHistory from "./components/CheckoutForm/orderHistory";
+import { Loader } from "semantic-ui-react";
 
 const ProductComp = ({ handleAddToCart, handleUpdateCartQty }) => {
   const [products, setProducts] = useState([]);
@@ -27,14 +28,6 @@ const ProductComp = ({ handleAddToCart, handleUpdateCartQty }) => {
 
   const fetchProducts = async () => {
     const { data } = await commerce.products.list();
-    // const docSnap = await getDocs(departmentRef);
-    // console.log('DOC SNAP', docSnap.docs.map(doc => doc.data()));
-    // setDoc(doc(departmentRef, 'Department1234'), {
-    //   name: 'Department1234',
-    //   description: 'department hai bhaiya',
-    //   image: 'Department1234',
-    //   slug: 'Department1234',
-    // })
     setProducts(data);
   };
 
@@ -51,7 +44,7 @@ const ProductComp = ({ handleAddToCart, handleUpdateCartQty }) => {
   }, []);
 
   if (!products.length)
-    return <div style={{ paddingTop: 100 }}>Loading...</div>;
+    return <Loader active inline="centered" size="massive" /> ;
   return (
     <Products
       key={products.id}
@@ -92,6 +85,7 @@ const App = () => {
   };
 
   const handleAddToCart = async (productId, quantity) => {
+    // dispatch(addToCart())
     const item = await commerce.cart.add(productId, quantity);
     setCart(item.cart);
   };
@@ -147,12 +141,13 @@ const App = () => {
 
   return (
     <div>
+      {/* <p style={{marginTop :100}} >hello  : {JSON.stringify(Object.keys(cart))} </p> */}
       <>
         <Router>
           <div style={{ display: "flex" }}>
             <CssBaseline />
             <Navbar
-              totalItems={cart.total_items}
+              totalItems={cart.total_unique_items}
               handleDrawerToggle={handleDrawerToggle}
             />
             <Suspense fallback={<div>Loading...</div>}>

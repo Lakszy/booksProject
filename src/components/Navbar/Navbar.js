@@ -65,6 +65,19 @@ const Navbar = ({ totalItems }) => {
               </Badge>
             </IconButton>
           </div>
+
+          <div className={classes.button}>
+            <IconButton 
+            component = {Link}
+            to="/ordershistory"
+            aria-label="Show Orders History"
+            color="inherit"
+            >
+             
+            <BsBoxSeam size={22} />
+            </IconButton>
+          </div>
+
           <div className={classes.button}>
             <IconButton
               onClick={handleLogout}
@@ -73,15 +86,7 @@ const Navbar = ({ totalItems }) => {
             >
               <ExitToApp />
             </IconButton>
-            <Badge
-              color="secondary"
-              overlap="rectangular"
-              style={{ paddingLeft: 4}}
-              onClick={handleOrders}
-              >
-              <BsBoxSeam size={22} />
             
-            </Badge>
           </div>
         </Toolbar>
       </AppBar>
