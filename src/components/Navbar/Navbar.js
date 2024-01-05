@@ -6,13 +6,27 @@ import {
   Badge,
   Typography,
 } from "@material-ui/core";
-import { ShoppingCart } from "@material-ui/icons";
-import { Link } from "react-router-dom";
+import { BsBoxSeam } from "react-icons/bs";
+import { ShoppingCart, ExitToApp } from "@material-ui/icons";
+import { Link, useHistory } from "react-router-dom";
 import logo from "../../assets/circles.svg";
 import useStyles from "./styles";
 
+import { useDispatch } from "react-redux";
+import { logoutReducer } from "../../Store/Auth";
+
 const Navbar = ({ totalItems }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  const handleLogout = () => {
+    dispatch(logoutReducer());
+    history.push("/");
+  };
+  const handleOrders = () => {
+    history.push("/ordershistory");
+  };
 
   return (
     <div>
@@ -42,10 +56,32 @@ const Navbar = ({ totalItems }) => {
               aria-label="Show cart items"
               color="inherit"
             >
-              <Badge badgeContent={totalItems} color="secondary" overlap="rectangular">
+              <Badge
+                badgeContent={totalItems}
+                color="secondary"
+                overlap="rectangular"
+              >
                 <ShoppingCart />
               </Badge>
             </IconButton>
+          </div>
+          <div className={classes.button}>
+            <IconButton
+              onClick={handleLogout}
+              aria-label="Show cart items"
+              color="inherit"
+            >
+              <ExitToApp />
+            </IconButton>
+            <Badge
+              color="secondary"
+              overlap="rectangular"
+              style={{ paddingLeft: 4}}
+              onClick={handleOrders}
+              >
+              <BsBoxSeam size={22} />
+            
+            </Badge>
           </div>
         </Toolbar>
       </AppBar>

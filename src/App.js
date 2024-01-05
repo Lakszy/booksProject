@@ -2,35 +2,82 @@ import React, { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { CssBaseline } from "@material-ui/core";
 import { commerce } from "./lib/commerce";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import loadingImg from "./assets/loader.gif";
 import Navbar from "./components/Navbar/Navbar";
 import Login from "./components/Login/Login";
 import Signup from "./components/SignUp/SignUp";
+import Products from "./components/Products/Products";
+import Cart from "./components/Cart/Cart";
+import Checkout from "./components/CheckoutForm/Checkout/Checkout";
+import ProductView from "./components/ProductView/ProductView";
+import Manga from "./components/Manga/Manga";
+import Fiction from "./components/Fiction/Fiction";
+import Biography from "./components/Bio/Biography";
+import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
+import { useDispatch, useSelector } from "react-redux";
+import { setCartReducer } from "./Store/Ecom";
+import { doc, collection, getDocs, setDoc } from "firebase/firestore";
+import { db } from "./lib/firebase";
+import OrderHistory from "./components/CheckoutForm/orderHistory";
 
-const Products = lazy(() => import("./components/Products/Products"));
-const Cart = lazy(() => import("./components/Cart/Cart"));
-const Checkout = lazy(() =>
-  import("./components/CheckoutForm/Checkout/Checkout")
-);
-const ProductView = lazy(() => import("./components/ProductView/ProductView"));
-const Manga = lazy(() => import("./components/Manga/Manga"));
-const Fiction = lazy(() => import("./components/Fiction/Fiction"));
-const Biography = lazy(() => import("./components/Bio/Biography"));
-
-const App = () => {
-  const [mobileOpen, setMobileOpen] = useState(false);
+const ProductComp = ({ handleAddToCart, handleUpdateCartQty }) => {
   const [products, setProducts] = useState([]);
-  const [mangaProducts, setMangaProducts] = useState([]);
-  const [fictionProducts, setFictionProducts] = useState([]);
-  const [bioProducts, setBioProducts] = useState([]);
   const [featureProducts, setFeatureProducts] = useState([]);
-  const [cart, setCart] = useState({});
-  const [order, setOrder] = useState({});
-  const [errorMessage, setErrorMessage] = useState("");
+
+  const departmentRef = collection(db, "Orders");
 
   const fetchProducts = async () => {
     const { data } = await commerce.products.list();
+    // const docSnap = await getDocs(departmentRef);
+    // console.log('DOC SNAP', docSnap.docs.map(doc => doc.data()));
+    // setDoc(doc(departmentRef, 'Department1234'), {
+    //   name: 'Department1234',
+    //   description: 'department hai bhaiya',
+    //   image: 'Department1234',
+    //   slug: 'Department1234',
+    // })
     setProducts(data);
+  };
+
+  const fetchCategoryProducts = async (category, stateSetter) => {
+    const { data } = await commerce.products.list({
+      category_slug: [category],
+    });
+    stateSetter(data);
+  };
+
+  useEffect(() => {
+    fetchProducts();
+    fetchCategoryProducts("featured", setFeatureProducts);
+  }, []);
+
+  if (!products.length)
+    return <div style={{ paddingTop: 100 }}>Loading...</div>;
+  return (
+    <Products
+      key={products.id}
+      products={products}
+      featureProducts={featureProducts}
+      onAddToCart={handleAddToCart}
+      handleUpdateCartQty={handleUpdateCartQty}
+    />
+  );
+};
+
+const App = () => {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mangaProducts, setMangaProducts] = useState([]);
+  const [fictionProducts, setFictionProducts] = useState([]);
+  const [bioProducts, setBioProducts] = useState([]);
+  const [order, setOrder] = useState({});
+  const [errorMessage, setErrorMessage] = useState("");
+  const { isLoggedIn } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
+  const { cart } = useSelector((state) => state.ecom);
+
+  const setCart = (payload) => {
+    console.log("BEFORE SETTING CART", payload);
+    dispatch(setCartReducer(payload));
   };
 
   const fetchCategoryProducts = async (category, stateSetter) => {
@@ -82,10 +129,15 @@ const App = () => {
     }
   };
 
+  const handleLogin = () => {
+    commerce.customer
+      .login("binova1245@gmail.com", "http://localhost:3000/login/callback")
+      .then((token) => console.log("TOKEN GOES HERE", token));
+  };
+
   useEffect(() => {
-    fetchProducts();
+    handleLogin();
     fetchCategoryProducts("manga", setMangaProducts);
-    fetchCategoryProducts("featured", setFeatureProducts);
     fetchCategoryProducts("fiction", setFictionProducts);
     fetchCategoryProducts("biography", setBioProducts);
     fetchCart();
@@ -93,89 +145,91 @@ const App = () => {
 
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
-  const MemoizedProducts = useMemo(
-    () => (
-      <Products
-        key={products.id}
-        products={products}
-        featureProducts={featureProducts}
-        onAddToCart={handleAddToCart}
-        handleUpdateCartQty={handleUpdateCartQty}
-      />
-    ),
-    [products, featureProducts, handleAddToCart, handleUpdateCartQty]
-  );
-
   return (
     <div>
-      {products.length > 0 ? (
-        <>
-          <Router>
-            <div style={{ display: "flex" }}>
-              <CssBaseline />
-              <Navbar
-                totalItems={cart.total_items}
-                handleDrawerToggle={handleDrawerToggle}
-              />
-              <Suspense fallback={<div>Loading...</div>}>
-                <Switch>
-                  <Route path="/" exact>
+      <>
+        <Router>
+          <div style={{ display: "flex" }}>
+            <CssBaseline />
+            <Navbar
+              totalItems={cart.total_items}
+              handleDrawerToggle={handleDrawerToggle}
+            />
+            <Suspense fallback={<div>Loading...</div>}>
+              <Switch>
+                <Route path="/" exact>
+                  {isLoggedIn ? (
+                    <ProductComp
+                      handleAddToCart={handleAddToCart}
+                      handleUpdateCartQty={handleUpdateCartQty}
+                    />
+                  ) : (
                     <Login />
-                  </Route>
-                  <Route path="/signup" exact>
-                    <Signup />
-                  </Route>
-                  <Route path="/products">{MemoizedProducts}</Route>
-                  <Route exact path="/cart">
-                    <Cart
-                      cart={cart}
-                      onUpdateCartQty={handleUpdateCartQty}
-                      onRemoveFromCart={handleRemoveFromCart}
-                      onEmptyCart={handleEmptyCart}
-                    />
-                  </Route>
-                  <Route path="/checkout" exact>
-                    <Checkout
-                      cart={cart}
-                      order={order}
-                      onCaptureCheckout={handleCaptureCheckout}
-                      error={errorMessage}
-                    />
-                  </Route>
-                  <Route path="/product-view/:id" exact>
-                    <ProductView />
-                  </Route>
-                  <Route path="/manga" exact>
-                    <Manga
-                      mangaProducts={mangaProducts}
-                      onAddToCart={handleAddToCart}
-                      handleUpdateCartQty
-                    />
-                  </Route>
-                  <Route path="/fiction" exact>
-                    <Fiction
-                      fictionProducts={fictionProducts}
-                      onAddToCart={handleAddToCart}
-                      handleUpdateCartQty
-                    />
-                  </Route>
-                  <Route path="/biography" exact>
-                    <Biography
-                      bioProducts={bioProducts}
-                      onAddToCart={handleAddToCart}
-                      handleUpdateCartQty
-                    />
-                  </Route>
-                </Switch>
-              </Suspense>
-            </div>
-          </Router>
-        </>
-      ) : (
-        <div className="loader">
-          <img src={loadingImg} alt="Loading" />
-        </div>
-      )}
+                  )}
+                </Route>
+                <Route
+                  path="/signup"
+                  exact
+                  render={() => isLoggedIn && <Redirect to="/" />}
+                >
+                  <Signup />
+                </Route>
+                <Route path="/ordershistory">
+                  <OrderHistory />
+                </Route>
+                <Route path="/products">
+                  <ProductComp
+                    handleAddToCart={handleAddToCart}
+                    handleUpdateCartQty={handleUpdateCartQty}
+                  />
+                </Route>
+
+                <Route exact path="/cart">
+                  <Cart
+                    cart={cart}
+                    onUpdateCartQty={handleUpdateCartQty}
+                    onRemoveFromCart={handleRemoveFromCart}
+                    onEmptyCart={handleEmptyCart}
+                  />
+                </Route>
+                <Route path="/checkout" exact>
+                  <Checkout
+                    cart={cart}
+                    order={order}
+                    onCaptureCheckout={handleCaptureCheckout}
+                    error={errorMessage}
+                  />
+                </Route>
+                <Route path="/product-view/:id" exact>
+                  <ProductView />
+                </Route>
+                <Route path="/manga" exact>
+                  <Manga
+                    mangaProducts={mangaProducts}
+                    onAddToCart={handleAddToCart}
+                    handleUpdateCartQty
+                  />
+                </Route>
+                <Route path="/fiction" exact>
+                  <Fiction
+                    fictionProducts={fictionProducts}
+                    onAddToCart={handleAddToCart}
+                    handleUpdateCartQty
+                  />
+                </Route>
+                <Route path="/biography" exact>
+                  <Biography
+                    bioProducts={bioProducts}
+                    onAddToCart={handleAddToCart}
+                    handleUpdateCartQty
+                  />
+                </Route>
+              </Switch>
+            </Suspense>
+          </div>
+        </Router>
+      </>
+      )
     </div>
   );
 };
