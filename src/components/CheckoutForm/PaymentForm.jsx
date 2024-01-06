@@ -1,5 +1,10 @@
-import React from "react";
-import { Typography, Button, Divider } from "@material-ui/core";
+import React, { useState } from "react";
+import {
+  Typography,
+  Button,
+  Divider,
+  CircularProgress,
+} from "@material-ui/core";
 import Review from "./Review";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../../lib/firebase";
@@ -14,6 +19,7 @@ const PaymentForm = ({
   onCaptureCheckout,
 }) => {
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
 
   const handlePayOnDelivery = async () => {
     const orderId = new Date().toISOString();
@@ -42,12 +48,16 @@ const PaymentForm = ({
     };
 
     try {
+      setLoading(true);
+
       await setDoc(doc(db, "orders", orderId), orderData);
-      dispatch(emptyCart()); 
+      dispatch(emptyCart());
       onCaptureCheckout(checkoutToken.id, orderData);
       nextStep();
     } catch (error) {
       console.error("Error storing order in Firestore:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -70,8 +80,16 @@ const PaymentForm = ({
           variant="contained"
           onClick={handlePayOnDelivery}
           style={{ backgroundColor: "#001524", color: "#FFFF" }}
+          disabled={loading}
         >
-          Pay on Delivery
+          {loading ? (
+            <div>
+              Pay on Delivery
+              <CircularProgress size={24} color="inherit" />
+            </div>
+          ) : (
+            "Pay on Delivery"
+          )}
         </Button>
       </div>
     </>

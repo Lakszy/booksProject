@@ -1,9 +1,14 @@
 import React, { useState, useRef } from "react";
-import { Grid, InputAdornment, Input } from "@material-ui/core";
+import {
+  Grid,
+  InputAdornment,
+  Input,
+  MenuItem,
+  Select,
+} from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import Product from "./Product/Product.js";
 import useStyles from "./styles";
-// import logo1 from "../../assets/Bookshop.gif";
 import "../ProductView/style.css";
 import { Link } from "react-router-dom";
 import mangaBg from "../../assets/maxresdefault.jpg";
@@ -14,21 +19,27 @@ import { Carousel } from "react-responsive-carousel";
 
 const Products = ({ products, onAddToCart, featureProducts }) => {
   const classes = useStyles();
-
   const [searchTerm, setSearchTerm] = useState("");
-
+  const [sortOption, setSortOption] = useState("default");
+  const [sortedProducts, setSortedProducts] = useState([...products]);
   const sectionRef = useRef(null);
 
   const handleInputClick = () => {
     sectionRef.current.scrollIntoView({ behavior: "smooth" });
+  };
+  const handleSort = () => {
+    const updatedSortedProducts = [...products];
+    updatedSortedProducts.sort((a, b) =>
+      (a.name || "").localeCompare(b.name || "")
+    );
+    setSortOption("alphabetical");
+    setSortedProducts(updatedSortedProducts);
   };
 
   return (
     <main className={classes.mainPage}>
       <div className={classes.toolbar} />
       <div className={classes.hero}>
-        {/* <img className={classes.heroImg} src={logo1}/> */}
-
         <div className={classes.heroCont}>
           <h1 className={classes.heroHeader}>BoOKS BOoKS!</h1>
           <h3 className={classes.heroDesc} ref={sectionRef}>
@@ -49,6 +60,15 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
                 </InputAdornment>
               }
             />
+          </div>
+          <div className={classes.sortDropdown}>
+            <Select
+              value={sortOption}
+              onChange={(e) => handleSort(e.target.value)}
+            >
+              <MenuItem value="default">Default Sorting</MenuItem>
+              <MenuItem value="alphabetical">Sort Alphabetically</MenuItem>
+            </Select>
           </div>
         </div>
       </div>
@@ -93,6 +113,7 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
 
       <div className={classes.carouselSection}>
         <Carousel
+          showThumbs={false}
           showIndicators={false}
           autoPlay={true}
           infiniteLoop={true}
@@ -135,20 +156,30 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
             <h3 className={classes.contentHeader}>
               Best <span style={{ color: "#f1361d" }}>Sellers</span>
             </h3>
-            <Grid className={classes.contentFeatured} container>
-              {featureProducts.map((product) => (
-                <Grid
-                  className={classes.contentFeatured}
-                  item
-                  xs={6}
-                  sm={5}
-                  md={3}
-                  lg={3}
-                  id="pro"
-                >
-                  <Product product={product} onAddToCart={onAddToCart} />
-                </Grid>
-              ))}
+            <Grid className={classes.content} container spacing={2}>
+              {sortedProducts
+                .filter((product) => {
+                  const includesTitle = product.name
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase());
+                  console.log(
+                    `Title: ${product.name}, Includes: ${includesTitle}`
+                  );
+                  return includesTitle;
+                })
+                .map((product) => (
+                  <Grid
+                    className={classes.content}
+                    item
+                    xs={6}
+                    sm={6}
+                    md={4}
+                    lg={3}
+                    key={product.id}
+                  >
+                    <Product product={product} onAddToCart={onAddToCart} />
+                  </Grid>
+                ))}
             </Grid>
           </div>
         </>
@@ -185,15 +216,11 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
         <Grid className={classes.content} container spacing={2}>
           {products
             .filter((product) => {
-              if (searchTerm === "") {
-                return product;
-              } else if (
-                product.name
-                  .toLowerCase()
-                  .includes(searchTerm.toLocaleLowerCase())
-              ) {
-                return product;
-              }
+              const includesTitle = product.name
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase());
+              console.log(`Title: ${product.name}, Includes: ${includesTitle}`);
+              return includesTitle;
             })
             .map((product) => (
               <Grid
@@ -203,7 +230,7 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
                 sm={6}
                 md={4}
                 lg={3}
-                id="pro"
+                key={product.id}
               >
                 <Product product={product} onAddToCart={onAddToCart} />
               </Grid>
@@ -213,5 +240,4 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
     </main>
   );
 };
-
 export default Products;
