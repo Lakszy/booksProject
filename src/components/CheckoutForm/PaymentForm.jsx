@@ -47,27 +47,14 @@ const PaymentForm = ({
 
     try {
       // Log intermediate values for debugging
-      console.log("Checkout Token ID:", checkoutToken.id);
-      console.log("Order Data:", orderData);
-
-      // Write data to Firestore
       await setDoc(orderRef, orderData);
-
-      // Dispatch emptyCart action
       dispatch(emptyCart());
-
-      // Call onCaptureCheckout with checkoutToken.id and orderData
       onCaptureCheckout(checkoutToken.id, orderData);
-
-      // Move to the next step in your checkout process
       nextStep();
     } catch (error) {
-      // Log the full error object for debugging
       console.error("Error storing order in Firestore:", error);
     }
   };
-
-  console.log('USER HERE GOES',user)
 
   return (
     <>
