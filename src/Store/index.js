@@ -13,19 +13,17 @@ import {
 
 import auth from './Auth';
 import ecom from './Ecom';
-import uid from './UID'
 import storage from 'redux-persist/lib/storage';
 
 const reducers = combineReducers({
   auth,
-  ecom,
-  uid
+  ecom
 });
 
 const persistConfig = {
   key: 'root',
   storage: storage,
-  whitelist: [ 'auth','ecom','uid'],
+  whitelist: [ 'auth','ecom',],
 };
 
 const persistedReducer = persistReducer(persistConfig, reducers);
