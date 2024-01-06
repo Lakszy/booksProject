@@ -46,11 +46,11 @@ const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
-  const uid = useSelector((state) => state.uid);
+  const {user} = useSelector((state) => state.auth);
 
   const fetchOrderHistory = async () => {
     try {
-      const q = query(collection(db, "orders"), where("userId", "==", uid));
+      const q = query(collection(db, "orders"), where("userId", "==", user.uid));
       const querySnapshot = await getDocs(q);
       console.log(querySnapshot,"jl")
 
@@ -67,7 +67,7 @@ const OrderHistory = () => {
 
   useEffect(() => {
     fetchOrderHistory();
-  }, [uid]);
+  }, []);
 
   const calculateTotalAmount = (order) => {
     if (!order.fulfillment || !order.fulfillment.line_items || order.fulfillment.line_items.length === 0) {
@@ -108,7 +108,7 @@ const OrderHistory = () => {
       ) : orders.length === 0 ? (
         <Typography variant="h6" gutterBottom>
           No orders found.
-          {uid}
+          
         </Typography>
       ) : (
         <div className={classes.tableContainer}>

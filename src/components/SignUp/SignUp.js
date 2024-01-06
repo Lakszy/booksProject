@@ -5,7 +5,6 @@ import { useHistory } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../lib";
 import { useDispatch } from 'react-redux';
-import { setUid } from '../../../src/Store/UID/index'
 
 import loginStyles from "../../styles";
 
@@ -31,18 +30,15 @@ const Signup = () => {
 
     try {
       setLoading(true);
-      const userCredential = await createUserWithEmailAndPassword(
+      const resp = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
-      const uid = userCredential.user.uid;
-
-      // Dispatch the action to set the uid in Redux
-      dispatch(setUid(uid));
-
-      alert(`User created with UID: ${uid}`);
-      history.push("/products");
+      if (!!resp.user) {
+        dispatch(loginReducer(resp.user))
+        history.push("/products");
+      }
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
         setError(

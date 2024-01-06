@@ -49,11 +49,22 @@ const AddressForm = ({ checkoutToken, test }) => {
     if (shippingSubdivision) fetchShippingOptions(checkoutToken.id, shippingCountry, shippingSubdivision);
   }, [shippingSubdivision]);
 
+  const handleSubmit = (data) => {
+    const formData = {
+      shippingCountry : 'india',
+      shippingSubdivision : 'DL',
+      shippingOption : 'ship_9XNwXNq5Q0VQ5V',
+
+    }
+    console.log('FORM SUBMISSION DATA', formData);
+    methods.handleSubmit((data) => test(formData))
+  }
+
   return (
     <>
       <Typography variant="h6" gutterBottom>Shipping address</Typography>
       <FormProvider {...methods}>
-        <form onSubmit={methods.handleSubmit((data) => test({ ...data, shippingCountry, shippingSubdivision, shippingOption }))}>
+        <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
             <FormInput required name="firstName" label="First name" />
             <FormInput required name="lastName" label="Last name" />

@@ -14,7 +14,7 @@ const PaymentForm = ({
   onCaptureCheckout,
 }) => {
   const dispatch = useDispatch();
-  const uid = useSelector((state) => state.uid);
+  const {user} = useSelector((state) => state.auth);
 
   const handlePayOnDelivery = async () => {
     const orderId = new Date().toISOString();
@@ -42,7 +42,7 @@ const PaymentForm = ({
           id: "pay_on_delivery",
         },
       },
-      userUid: uid,
+      userUid: user.uid,
     };
 
     try {
@@ -65,9 +65,11 @@ const PaymentForm = ({
     }
   };
 
+  console.log('USER HERE GOES',user)
+
   return (
     <>
-      <p>User ID: {uid}</p>
+      <p>User ID: {user.uid}</p>
       <Review checkoutToken={checkoutToken} />
       <Divider />
       <Typography variant="h6" gutterBottom style={{ margin: "20px 0" }}>
