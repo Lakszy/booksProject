@@ -51,12 +51,12 @@ const AddressForm = ({ checkoutToken, test }) => {
 
   const handleSubmit = (data) => {
     const formData = {
-      shippingCountry : 'india',
-      shippingSubdivision : 'DL',
-      shippingOption : 'ship_9XNwXNq5Q0VQ5V',
-
+      shippingCountry ,
+      shippingSubdivision,
+      shippingOption,
+      ...data
     }
-    console.log('FORM SUBMISSION DATA', formData);
+    console.log('FORM SUBMISSION DATA', {formData, shippingSubdivision, shippingCountry, shippingOption});
     methods.handleSubmit((data) => test(formData))
   }
 
@@ -78,6 +78,7 @@ const AddressForm = ({ checkoutToken, test }) => {
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Button component={Link} variant="outlined" to="/cart">Back to Cart</Button>
             <Button type="submit" variant="contained" color="primary">Next</Button>
+            {/* <Button type="button" onClick={handleSubmit} variant="contained" color="primary">Next</Button> */}
           </div>
         </form>
       </FormProvider>
