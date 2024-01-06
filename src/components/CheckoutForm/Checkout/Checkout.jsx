@@ -69,7 +69,7 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
           </Typography>
         </div>
         <br />
-        <Button component={Link} variant="outlined" type="button" to="/">
+        <Button component={Link} variant="outlined" type="button" to="/products">
           Back to home
         </Button>
       </>
@@ -83,7 +83,7 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
       <>
         <Typography variant="h5">Error: {error}</Typography>
         <br />
-        <Button component={Link} variant="outlined" type="button" to="/">
+        <Button component={Link} variant="outlined" type="button" to="/products">
           Back to home
         </Button>
       </>

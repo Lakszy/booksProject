@@ -52,6 +52,7 @@ const OrderHistory = () => {
     try {
       const q = query(collection(db, "orders"), where("userId", "==", uid));
       const querySnapshot = await getDocs(q);
+      console.log(querySnapshot,"jl")
 
       const ordersData = querySnapshot.docs.map((doc) => ({
         id: doc.id,

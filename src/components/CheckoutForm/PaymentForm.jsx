@@ -15,8 +15,11 @@ const PaymentForm = ({
 }) => {
   const dispatch = useDispatch();
   const uid = useSelector((state) => state.uid);
+
   const handlePayOnDelivery = async () => {
     const orderId = new Date().toISOString();
+    const orderRef = doc(db, "orders", orderId);
+
     const orderData = {
       line_items: checkoutToken.live.line_items,
       customer: {
@@ -43,9 +46,19 @@ const PaymentForm = ({
     };
 
     try {
-      await setDoc(doc(db, "orders", orderId), orderData);
+      // Log orderData for debugging purposes
+      console.log("Order Data:", orderData);
+
+      // Write data to Firestore
+      await setDoc(orderRef, orderData);
+
+      // Dispatch emptyCart action
       dispatch(emptyCart());
+
+      // Call onCaptureCheckout with checkoutToken.id and orderData
       onCaptureCheckout(checkoutToken.id, orderData);
+
+      // Move to the next step in your checkout process
       nextStep();
     } catch (error) {
       console.error("Error storing order in Firestore:", error);
@@ -79,5 +92,4 @@ const PaymentForm = ({
     </>
   );
 };
-
 export default PaymentForm;
