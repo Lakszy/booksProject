@@ -11,7 +11,7 @@ import OrderConfirmation from '../sucessCard';
 
 const steps = ['Shipping address', 'Payment details', 'Order Details'];
 
-const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
+const Checkout = ({ cart, onCaptureCheckout, order, error, onEmptyCart }) => {
   const [checkoutToken, setCheckoutToken] = useState(null);
   const [activeStep, setActiveStep] = useState(0);
   const [shippingData, setShippingData] = useState({});
@@ -71,7 +71,7 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
       case 0:
         return <AddressForm checkoutToken={checkoutToken} nextStep={nextStep} setShippingData={setShippingData} test={test} />;
       case 1:
-        return <PaymentForm checkoutToken={checkoutToken} nextStep={nextStep} backStep={backStep} shippingData={shippingData} onCaptureCheckout={onCaptureCheckout} />;
+        return <PaymentForm checkoutToken={checkoutToken} nextStep={nextStep} backStep={backStep} shippingData={shippingData} onCaptureCheckout={onEmptyCart} />;
       case 2:
         return <OrderConfirmation  checkoutToken={checkoutToken} />; 
       default:

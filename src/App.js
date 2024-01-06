@@ -152,7 +152,7 @@ const App = () => {
           <div style={{ display: "flex" }}>
             <CssBaseline />
             <Navbar
-              totalItems={cart.total_items}
+              totalItems={cart.total_unique_items}
               handleDrawerToggle={handleDrawerToggle}
             />
             <Suspense fallback={<div>Loading...</div>}>
@@ -198,6 +198,7 @@ const App = () => {
                     order={order}
                     onCaptureCheckout={handleCaptureCheckout}
                     error={errorMessage}
+                    onEmptyCart={handleEmptyCart}
                   />
                 </Route>
                 <Route path="/product-view/:id" exact>

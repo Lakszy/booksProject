@@ -14,8 +14,9 @@ import {
   CardMedia,
   Container,
 } from "@material-ui/core";
-import { getDocs, collection } from "firebase/firestore";
+import { getDocs, collection, query, where } from "firebase/firestore";
 import { db } from "../../lib/firebase";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,10 +47,11 @@ const useStyles = makeStyles((theme) => ({
 const OrderHistory = () => {
   const classes = useStyles();
   const [orders, setOrders] = useState([]);
+  const {user} = useSelector(state => state.auth);
 
   const fetchOrderHistory = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, "orders"));
+      const querySnapshot = await getDocs(query(collection(db, "orders"), where("userId", "==", user.uid)));
       const ordersData = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
