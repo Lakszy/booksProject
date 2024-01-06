@@ -1,3 +1,5 @@
+// Products.jsx
+
 import React, { useState, useRef } from "react";
 import {
   Grid,
@@ -21,12 +23,14 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
   const classes = useStyles();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("default");
+  const [selectedGenre, setSelectedGenre] = useState("all");
   const [sortedProducts, setSortedProducts] = useState([...products]);
   const sectionRef = useRef(null);
 
   const handleInputClick = () => {
     sectionRef.current.scrollIntoView({ behavior: "smooth" });
   };
+
   const handleSort = () => {
     const updatedSortedProducts = [...products];
     updatedSortedProducts.sort((a, b) =>
@@ -35,6 +39,23 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
     setSortOption("alphabetical");
     setSortedProducts(updatedSortedProducts);
   };
+
+  const handleGenreFilter = (genre) => {
+    console.log("Selected Genre:", genre);
+    setSelectedGenre(genre);
+  };
+
+  const filteredProducts = sortedProducts.filter((product) => {
+    const includesTitle = product.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const includesGenre =
+      selectedGenre === "all" ||
+      product.categories.some((category) => category.slug === selectedGenre);
+    console.log("Product:", product);
+
+    return includesTitle && includesGenre;
+  });
 
   return (
     <main className={classes.mainPage}>
@@ -60,15 +81,20 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
                 </InputAdornment>
               }
             />
-          </div>
-          <div className={classes.sortDropdown}>
-            <Select
-              value={sortOption}
-              onChange={(e) => handleSort(e.target.value)}
+            <div
+              style={{ display: "inline-block", marginLeft: "10px" }}
+              className={classes.sortDropdown}
             >
-              <MenuItem value="default">Default Sorting</MenuItem>
-              <MenuItem value="alphabetical">Sort Alphabetically</MenuItem>
-            </Select>
+              <Select
+                value={selectedGenre}
+                onChange={(e) => handleGenreFilter(e.target.value)}
+              >
+                <MenuItem value="all">All Genres</MenuItem>
+                <MenuItem value="manga">Manga</MenuItem>
+                <MenuItem value="biography">Biography</MenuItem>
+                <MenuItem value="fiction">Fiction</MenuItem>
+              </Select>
+            </div>
           </div>
         </div>
       </div>
@@ -156,88 +182,35 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
             <h3 className={classes.contentHeader}>
               Best <span style={{ color: "#f1361d" }}>Sellers</span>
             </h3>
+            <div style={{ margin: "10px" }} className={classes.sortDropdown}>
+              <Select
+                value={sortOption}
+                onChange={(e) => handleSort(e.target.value)}
+              >
+                <MenuItem value="default">Default Sorting</MenuItem>
+                <MenuItem value="alphabetical">Sort Alphabetically</MenuItem>
+              </Select>
+            </div>
             <Grid className={classes.content} container spacing={2}>
-              {sortedProducts
-                .filter((product) => {
-                  const includesTitle = product.name
-                    .toLowerCase()
-                    .includes(searchTerm.toLowerCase());
-                  console.log(
-                    `Title: ${product.name}, Includes: ${includesTitle}`
-                  );
-                  return includesTitle;
-                })
-                .map((product) => (
-                  <Grid
-                    className={classes.content}
-                    item
-                    xs={6}
-                    sm={6}
-                    md={4}
-                    lg={3}
-                    key={product.id}
-                  >
-                    <Product product={product} onAddToCart={onAddToCart} />
-                  </Grid>
-                ))}
+              {filteredProducts.map((product) => (
+                <Grid
+                  className={classes.content}
+                  item
+                  xs={6}
+                  sm={6}
+                  md={4}
+                  lg={3}
+                  key={product.id}
+                >
+                  <Product product={product} onAddToCart={onAddToCart} />
+                </Grid>
+              ))}
             </Grid>
           </div>
         </>
       )}
-
-      <div>
-        {searchTerm === "" && (
-          <>
-            <h1 className={classes.booksHeader}>
-              Discover <span style={{ color: "#f1361d" }}>Books</span>
-            </h1>
-            <h3 className={classes.booksDesc}>
-              Explore our comprehensive collection of books.
-            </h3>
-          </>
-        )}
-        <div className={classes.mobileSearch}>
-          <div className={classes.mobSearchs}>
-            <Input
-              className={classes.mobSearchb}
-              type="text"
-              placeholder="Search for books"
-              onChange={(event) => {
-                setSearchTerm(event.target.value);
-              }}
-              startAdornment={
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              }
-            />
-          </div>
-        </div>
-        <Grid className={classes.content} container spacing={2}>
-          {products
-            .filter((product) => {
-              const includesTitle = product.name
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase());
-              console.log(`Title: ${product.name}, Includes: ${includesTitle}`);
-              return includesTitle;
-            })
-            .map((product) => (
-              <Grid
-                className={classes.content}
-                item
-                xs={6}
-                sm={6}
-                md={4}
-                lg={3}
-                key={product.id}
-              >
-                <Product product={product} onAddToCart={onAddToCart} />
-              </Grid>
-            ))}
-        </Grid>
-      </div>
     </main>
   );
 };
+
 export default Products;

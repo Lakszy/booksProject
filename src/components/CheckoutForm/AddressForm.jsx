@@ -1,158 +1,105 @@
-import React, { useState, useRef, useEffect } from "react";
-import {
-  Grid,
-  InputAdornment,
-  Input,
-  Select,
-  MenuItem,
-} from "@material-ui/core";
-import SearchIcon from "@material-ui/icons/Search";
-import Product from "../Products/Product/Product";
-import { Link } from "react-router-dom";
-import mangaBg from "../../assets/maxresdefault.jpg";
-import bioBg from "../../assets/biography.jpg";
-import fictionBg from "../../assets/fiction.jpg";
-import { Carousel } from "react-responsive-carousel";
+import React, { useState, useEffect } from 'react';
+import { InputLabel, Select, MenuItem, Button, Grid, Typography } from '@material-ui/core';
+import { useForm, FormProvider } from 'react-hook-form';
+import { Link } from 'react-router-dom';
+
 import { commerce } from '../../lib/commerce';
+import FormInput from './CustomTextField';
 
-// Define the Products component
-const Products = ({ onAddToCart, featureProducts }) => {
-  // Use the styles defined in the styles.js file
-  const classes = useStyles();
-  // State to manage the search term
-  const [searchTerm, setSearchTerm] = useState("");
-  // State to manage the sort option
-  const [sortOption, setSortOption] = useState("default");
-  // State to manage the sorted products
-  const [sortedProducts, setSortedProducts] = useState([]);
-  // Reference to the section for smooth scrolling
-  const sectionRef = useRef(null);
+const AddressForm = ({ checkoutToken, test }) => {
+  const [shippingCountries, setShippingCountries] = useState([]);
+  const [shippingCountry, setShippingCountry] = useState('');
+  const [shippingSubdivisions, setShippingSubdivisions] = useState([]);
+  const [shippingSubdivision, setShippingSubdivision] = useState('');
+  const [shippingOptions, setShippingOptions] = useState([]);
+  const [shippingOption, setShippingOption] = useState('');
+  const methods = useForm();
 
-  // useEffect hook to fetch products from Commerce.js when the component mounts
+  const fetchShippingCountries = async (checkoutTokenId) => {
+    const { countries } = await commerce.services.localeListShippingCountries(checkoutTokenId);
+
+    setShippingCountries(countries);
+    setShippingCountry(Object.keys(countries)[0]);
+  };
+
+  const fetchSubdivisions = async (countryCode) => {
+    const { subdivisions } = await commerce.services.localeListSubdivisions(countryCode);
+
+    setShippingSubdivisions(subdivisions);
+    setShippingSubdivision(Object.keys(subdivisions)[0]);
+  };
+
+  const fetchShippingOptions = async (checkoutTokenId, country, stateProvince = null) => {
+    const options = await commerce.checkout.getShippingOptions(checkoutTokenId, { country, region: stateProvince });
+
+    setShippingOptions(options);
+    setShippingOption(options[0].id);
+  };
+
   useEffect(() => {
-    // Fetch products from Commerce.js using the imported commerce object
-    commerce.products.list().then((response) => {
-      setSortedProducts(response.data);
-    });
+    fetchShippingCountries(checkoutToken.id);
   }, []);
 
-  // Function to handle smooth scroll to the search section
-  const handleInputClick = () => {
-    sectionRef.current.scrollIntoView({ behavior: "smooth" });
-  };
+  useEffect(() => {
+    if (shippingCountry) fetchSubdivisions(shippingCountry);
+  }, [shippingCountry]);
 
-  // Function to handle sorting of products
-  const handleSort = (option) => {
-    // Create a copy of the sorted products array
-    let updatedSortedProducts = [...sortedProducts];
-    // Sort the products based on the selected option
-    if (option === "alphabetical") {
-      updatedSortedProducts.sort((a, b) => {
-        const titleA = a.name || "";
-        const titleB = b.name || "";
-        return titleA.localeCompare(titleB);
-      });
-      // Update the sort option state
-      setSortOption("alphabetical");
-    } else {
-      // If the default option is selected, update the sort option state
-      setSortOption("default");
-    }
-    // Update the state with the sorted products
-    setSortedProducts(updatedSortedProducts);
-  };
+  useEffect(() => {
+    if (shippingSubdivision) fetchShippingOptions(checkoutToken.id, shippingCountry, shippingSubdivision);
+  }, [shippingSubdivision]);
 
-  // Render the main component
   return (
-    <main className={classes.mainPage}>
-      <div className={classes.toolbar} />
-      <div className={classes.hero}>
-        <div className={classes.heroCont}>
-          <h1 className={classes.heroHeader}>BoOKS BOoKS!</h1>
-          <h3 className={classes.heroDesc} ref={sectionRef}>
-            WE ALL ARE BOOKWORMS👾
-          </h3>
-          <div className={classes.searchs}>
-            <Input
-              className={classes.searchb}
-              type="text"
-              placeholder="Which book are you looking for?"
-              onClick={handleInputClick}
-              onChange={(event) => {
-                setSearchTerm(event.target.value);
-              }}
-              startAdornment={
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              }
-            />
+    <>
+      <Typography variant="h6" gutterBottom>Shipping address</Typography>
+      <FormProvider {...methods}>
+        <form onSubmit={methods.handleSubmit((data) => test({ ...data, shippingCountry, shippingSubdivision, shippingOption }))}>
+          <Grid container spacing={3}>
+            <FormInput required name="firstName" label="First name" />
+            <FormInput required name="lastName" label="Last name" />
+            <FormInput required name="address1" label="Address line 1" />
+            <FormInput required name="email" label="Email" />
+            <FormInput required name="city" label="City" />
+            <FormInput required name="zip" label="Zip / Postal code" />
+            <Grid item xs={12} sm={6}>
+              <InputLabel>Shipping Country</InputLabel>
+              <Select value={shippingCountry} fullWidth onChange={(e) => setShippingCountry(e.target.value)}>
+                {Object.entries(shippingCountries).map(([code, name]) => ({ id: code, label: name })).map((item) => (
+                  <MenuItem key={item.id} value={item.id}>
+                    {item.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <InputLabel>Shipping Subdivision</InputLabel>
+              <Select value={shippingSubdivision} fullWidth onChange={(e) => setShippingSubdivision(e.target.value)}>
+                {Object.entries(shippingSubdivisions).map(([code, name]) => ({ id: code, label: name })).map((item) => (
+                  <MenuItem key={item.id} value={item.id}>
+                    {item.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <InputLabel>Shipping Options</InputLabel>
+              <Select value={shippingOption} fullWidth onChange={(e) => setShippingOption(e.target.value)}>
+                {shippingOptions.map((sO) => ({ id: sO.id, label: `${sO.description} - (${sO.price.formatted_with_symbol})` })).map((item) => (
+                  <MenuItem key={item.id} value={item.id}>
+                    {item.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Grid>
+          </Grid>
+          <br />
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Button component={Link} variant="outlined" to="/cart">Back to Cart</Button>
+            <Button type="submit" variant="contained" color="primary">Next</Button>
           </div>
-          <div className={classes.sortDropdown}>
-            <Select
-              value={sortOption}
-              onChange={(e) => handleSort(e.target.value)}
-            >
-              <MenuItem value="default">Default Sorting</MenuItem>
-              <MenuItem value="alphabetical">Sort Alphabetically</MenuItem>
-            </Select>
-          </div>
-        </div>
-      </div>
-
-      {searchTerm === "" && (
-        <div className={classes.categorySection}>
-          <h1 className={classes.categoryHeader}>Categories</h1>
-          <h3 className={classes.categoryDesc}>
-            Browse our featured categories
-          </h3>
-          <div className={classes.buttonSection}>
-            <div>
-              <Link to="manga">
-                <button
-                  className={classes.categoryButton}
-                  style={{ backgroundImage: `url(${mangaBg})` }}
-                ></button>
-              </Link>
-              <div className={classes.categoryName}>Manga</div>
-            </div>
-            <div>
-              <Link to="biography">
-                <button
-                  className={classes.categoryButton}
-                  style={{ backgroundImage: `url(${bioBg})` }}
-                ></button>
-              </Link>
-              <div className={classes.categoryName}>Biography</div>
-            </div>
-            <div>
-              <Link to="fiction">
-                <button
-                  className={classes.categoryButton}
-                  style={{ backgroundImage: `url(${fictionBg})` }}
-                ></button>
-              </Link>
-              <div className={classes.categoryName}>Fiction</div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className={classes.carouselSection}>
-        {/* <Carousel
-        showThumbs={false}
-          showIndicators={false}
-          autoPlay={true}
-          infiniteLoop={true}
-          showArrows={true}
-          showStatus={false}
-        > */}
-
-
-        </div>
-    </main>
+        </form>
+      </FormProvider>
+    </>
   );
 };
 
-// Export the Products component
-export default Products;
+export default AddressForm;
