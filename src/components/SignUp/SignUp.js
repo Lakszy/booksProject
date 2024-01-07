@@ -7,7 +7,6 @@ import { auth } from "../../lib";
 import { useDispatch } from 'react-redux';
 
 import loginStyles from "../../styles";
-import { useDispatch } from "react-redux";
 import { loginReducer } from "../../Store/Auth";
 
 const Signup = () => {
