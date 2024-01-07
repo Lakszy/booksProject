@@ -1,9 +1,16 @@
+// Products.jsx
+
 import React, { useState, useRef } from "react";
-import { Grid, InputAdornment, Input } from "@material-ui/core";
+import {
+  Grid,
+  InputAdornment,
+  Input,
+  MenuItem,
+  Select,
+} from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import Product from "./Product/Product.js";
 import useStyles from "./styles";
-// import logo1 from "../../assets/Bookshop.gif";
 import "../ProductView/style.css";
 import { Link } from "react-router-dom";
 import mangaBg from "../../assets/maxresdefault.jpg";
@@ -14,21 +21,46 @@ import { Carousel } from "react-responsive-carousel";
 
 const Products = ({ products, onAddToCart, featureProducts }) => {
   const classes = useStyles();
-
   const [searchTerm, setSearchTerm] = useState("");
-
+  const [sortOption, setSortOption] = useState("default");
+  const [selectedGenre, setSelectedGenre] = useState("all");
+  const [sortedProducts, setSortedProducts] = useState([...products]);
   const sectionRef = useRef(null);
 
   const handleInputClick = () => {
     sectionRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
+  const handleSort = () => {
+    const updatedSortedProducts = [...products];
+    updatedSortedProducts.sort((a, b) =>
+      (a.name || "").localeCompare(b.name || "")
+    );
+    setSortOption("alphabetical");
+    setSortedProducts(updatedSortedProducts);
+  };
+
+  const handleGenreFilter = (genre) => {
+    console.log("Selected Genre:", genre);
+    setSelectedGenre(genre);
+  };
+
+  const filteredProducts = sortedProducts.filter((product) => {
+    const includesTitle = product.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const includesGenre =
+      selectedGenre === "all" ||
+      product.categories.some((category) => category.slug === selectedGenre);
+    console.log("Product:", product);
+
+    return includesTitle && includesGenre;
+  });
+
   return (
     <main className={classes.mainPage}>
       <div className={classes.toolbar} />
       <div className={classes.hero}>
-        {/* <img className={classes.heroImg} src={logo1}/> */}
-
         <div className={classes.heroCont}>
           <h1 className={classes.heroHeader}>BoOKS BOoKS!</h1>
           <h3 className={classes.heroDesc} ref={sectionRef}>
@@ -49,6 +81,20 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
                 </InputAdornment>
               }
             />
+            <div
+              style={{ display: "inline-block", marginLeft: "10px" }}
+              className={classes.sortDropdown}
+            >
+              <Select
+                value={selectedGenre}
+                onChange={(e) => handleGenreFilter(e.target.value)}
+              >
+                <MenuItem value="all">All Genres</MenuItem>
+                <MenuItem value="manga">Manga</MenuItem>
+                <MenuItem value="biography">Biography</MenuItem>
+                <MenuItem value="fiction">Fiction</MenuItem>
+              </Select>
+            </div>
           </div>
         </div>
       </div>
@@ -93,6 +139,7 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
 
       <div className={classes.carouselSection}>
         <Carousel
+          showThumbs={false}
           showIndicators={false}
           autoPlay={true}
           infiniteLoop={true}
@@ -135,16 +182,25 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
             <h3 className={classes.contentHeader}>
               Best <span style={{ color: "#f1361d" }}>Sellers</span>
             </h3>
-            <Grid className={classes.contentFeatured} container>
-              {featureProducts.map((product) => (
+            <div style={{ margin: "10px" }} className={classes.sortDropdown}>
+              <Select
+                value={sortOption}
+                onChange={(e) => handleSort(e.target.value)}
+              >
+                <MenuItem value="default">Default Sorting</MenuItem>
+                <MenuItem value="alphabetical">Sort Alphabetically</MenuItem>
+              </Select>
+            </div>
+            <Grid className={classes.content} container spacing={2}>
+              {filteredProducts.map((product) => (
                 <Grid
-                  className={classes.contentFeatured}
+                  className={classes.content}
                   item
                   xs={6}
-                  sm={5}
-                  md={3}
+                  sm={6}
+                  md={4}
                   lg={3}
-                  id="pro"
+                  key={product.id}
                 >
                   <Product product={product} onAddToCart={onAddToCart} />
                 </Grid>
@@ -153,63 +209,6 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
           </div>
         </>
       )}
-
-      <div>
-        {searchTerm === "" && (
-          <>
-            <h1 className={classes.booksHeader}>
-              Discover <span style={{ color: "#f1361d" }}>Books</span>
-            </h1>
-            <h3 className={classes.booksDesc}>
-              Explore our comprehensive collection of books.
-            </h3>
-          </>
-        )}
-        <div className={classes.mobileSearch}>
-          <div className={classes.mobSearchs}>
-            <Input
-              className={classes.mobSearchb}
-              type="text"
-              placeholder="Search for books"
-              onChange={(event) => {
-                setSearchTerm(event.target.value);
-              }}
-              startAdornment={
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              }
-            />
-          </div>
-        </div>
-        <Grid className={classes.content} container spacing={2}>
-          {products
-            .filter((product) => {
-              if (searchTerm === "") {
-                return product;
-              } else if (
-                product.name
-                  .toLowerCase()
-                  .includes(searchTerm.toLocaleLowerCase())
-              ) {
-                return product;
-              }
-            })
-            .map((product) => (
-              <Grid
-                className={classes.content}
-                item
-                xs={6}
-                sm={6}
-                md={4}
-                lg={3}
-                id="pro"
-              >
-                <Product product={product} onAddToCart={onAddToCart} />
-              </Grid>
-            ))}
-        </Grid>
-      </div>
     </main>
   );
 };

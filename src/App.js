@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, lazy, Suspense } from "react";
-import { CssBaseline } from "@material-ui/core";
+import { CircularProgress, CssBaseline } from "@material-ui/core";
 import { commerce } from "./lib/commerce";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
@@ -51,7 +51,20 @@ const ProductComp = ({ handleAddToCart, handleUpdateCartQty }) => {
   }, []);
 
   if (!products.length)
-    return <div style={{ paddingTop: 100 }}>Loading...</div>;
+    return (
+      <div
+        style={{
+          paddingTop: 100,
+          fontSize: "1rem",
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+        }}
+      >
+        <h1>Loading Products Please Wait</h1>
+        <CircularProgress />
+      </div>
+    );
   return (
     <Products
       key={products.id}
@@ -155,7 +168,13 @@ const App = () => {
               totalItems={cart.total_unique_items}
               handleDrawerToggle={handleDrawerToggle}
             />
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense
+              fallback={
+                <div style={{ fontSize: "3rem", fontFamily: "fantasy" }}>
+                  Loading Products Please Wait
+                </div>
+              }
+            >
               <Switch>
                 <Route path="/" exact>
                   {isLoggedIn ? (
