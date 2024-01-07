@@ -12,13 +12,16 @@ import ProductView from "./components/ProductView/ProductView";
 import Manga from "./components/Manga/Manga";
 import Fiction from "./components/Fiction/Fiction";
 import Biography from "./components/Bio/Biography";
+import SearchPage from "./components/Products/ProductSearch/SearchPage";
 import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
 import { useDispatch, useSelector } from "react-redux";
 import { setCartReducer } from "./Store/Ecom";
 import { doc, collection, getDocs, setDoc } from "firebase/firestore";
 import { db } from "./lib/firebase";
 import OrderHistory from "./components/CheckoutForm/orderHistory";
-
+import { Container, Row, Spinner } from "react-bootstrap";
+import { Loader } from './components/Common'
+ 
 const ProductComp = ({ handleAddToCart, handleUpdateCartQty }) => {
   const [products, setProducts] = useState([]);
   const [featureProducts, setFeatureProducts] = useState([]);
@@ -27,14 +30,6 @@ const ProductComp = ({ handleAddToCart, handleUpdateCartQty }) => {
 
   const fetchProducts = async () => {
     const { data } = await commerce.products.list();
-    // const docSnap = await getDocs(departmentRef);
-    // console.log('DOC SNAP', docSnap.docs.map(doc => doc.data()));
-    // setDoc(doc(departmentRef, 'Department1234'), {
-    //   name: 'Department1234',
-    //   description: 'department hai bhaiya',
-    //   image: 'Department1234',
-    //   slug: 'Department1234',
-    // })
     setProducts(data);
   };
 
@@ -50,21 +45,8 @@ const ProductComp = ({ handleAddToCart, handleUpdateCartQty }) => {
     fetchCategoryProducts("featured", setFeatureProducts);
   }, []);
 
-  if (!products.length)
-    return (
-      <div
-        style={{
-          paddingTop: 100,
-          fontSize: "1rem",
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
-        }}
-      >
-        <h1>Loading Products Please Wait</h1>
-        <CircularProgress />
-      </div>
-    );
+  if (!products || products.length === 0) return <Loader />
+   
   return (
     <Products
       key={products.id}
@@ -203,6 +185,12 @@ const App = () => {
                   />
                 </Route>
 
+                <Route path="/search">
+                  <SearchPage 
+                   onAddToCart={handleAddToCart}
+                  />
+                </Route>
+
                 <Route exact path="/cart">
                   <Cart
                     cart={cart}
@@ -249,7 +237,7 @@ const App = () => {
           </div>
         </Router>
       </>
-      )
+      
     </div>
   );
 };

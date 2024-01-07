@@ -172,10 +172,13 @@ export default makeStyles((theme) => ({
       gap: 0,
       paddingTop: 0,
       justifyContent: "center",
+      //pass image in background :
+      background: "url(https://www.thestatesman.com/wp-content/uploads/2023/10/The-Bookshop.jpg)",
     },
     heroHeader: {
       textAlign: "center",
-      color: "#001524",
+      color: "#fff",
+      border : "1px solid #fff",
       fontSize: 60,
       fontFamily: "Poppins",
       fontWeight: "800",
@@ -184,14 +187,16 @@ export default makeStyles((theme) => ({
       wordSpacing: 4,
       width: 600,
       paddingBottom: 8,
+      textShadow: "2px 2px 4px #000000",
     },
     heroDesc: {
       textAlign: "center",
-      color: "#455A64",
+      color: "yellow",
       fontSize: 24,
       fontFamily: "Raleway",
       paddingBottom: 28,
       width: 584,
+      textShadow : "2px 2px 4px #000000",
     },
     searchs: {
       justifyContent: "center",

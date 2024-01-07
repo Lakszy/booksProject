@@ -62,40 +62,11 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
       <div className={classes.toolbar} />
       <div className={classes.hero}>
         <div className={classes.heroCont}>
-          <h1 className={classes.heroHeader}>BoOKS BOoKS!</h1>
+          <h1 className={classes.heroHeader}>BNV BOOKSTORE!</h1>
           <h3 className={classes.heroDesc} ref={sectionRef}>
             WE ALL ARE BOOKWORMS👾
           </h3>
-          <div className={classes.searchs}>
-            <Input
-              className={classes.searchb}
-              type="text"
-              placeholder="Which book are you looking for?"
-              onClick={handleInputClick}
-              onChange={(event) => {
-                setSearchTerm(event.target.value);
-              }}
-              startAdornment={
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              }
-            />
-            <div
-              style={{ display: "inline-block", marginLeft: "10px" }}
-              className={classes.sortDropdown}
-            >
-              <Select
-                value={selectedGenre}
-                onChange={(e) => handleGenreFilter(e.target.value)}
-              >
-                <MenuItem value="all">All Genres</MenuItem>
-                <MenuItem value="manga">Manga</MenuItem>
-                <MenuItem value="biography">Biography</MenuItem>
-                <MenuItem value="fiction">Fiction</MenuItem>
-              </Select>
-            </div>
-          </div>
+       
         </div>
       </div>
 

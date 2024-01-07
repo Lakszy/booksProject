@@ -107,7 +107,7 @@ const OrderHistory = () => {
                   Date: {new Date(order.created).toLocaleDateString()}
                 </Typography>
                 <Typography variant="body1" gutterBottom>
-                  Status: {order.status}
+                  Status: {order?.status}
                 </Typography>
                 <Typography variant="body1" gutterBottom>
                   Total: {calculateTotalAmount(order)}

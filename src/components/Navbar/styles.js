@@ -56,4 +56,12 @@ export default makeStyles((theme) => ({
       width: "20ch",
     },
   },
+  searchb: {
+    backgroundColor: "white",
+    height: "80%",
+    width: "60%",
+    padding: "12px",
+    borderRadius: "6px",
+    border: "1px solid #001524",
+  },
 }));

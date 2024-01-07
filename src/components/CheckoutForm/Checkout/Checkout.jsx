@@ -92,7 +92,7 @@ const Checkout = ({ cart, onCaptureCheckout, order, error, onEmptyCart }) => {
               </Step>
             ))}
           </Stepper>
-          {activeStep === steps.length ? <Confirmation /> : !!checkoutToken && <Form />}
+          {activeStep === steps.length ? <Confirmation /> : !!checkoutToken  ? <Form /> : <div className={classes.spinner}><CircularProgress /></div>}
         </Paper>
       </main>
     </>

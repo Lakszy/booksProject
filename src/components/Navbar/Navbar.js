@@ -1,17 +1,21 @@
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   AppBar,
   Toolbar,
   IconButton,
   Badge,
   Typography,
+  Input,
+  InputAdornment
 } from "@material-ui/core";
+
 import { BsBoxSeam } from "react-icons/bs";
 import { ShoppingCart, ExitToApp } from "@material-ui/icons";
 import { Link, useHistory } from "react-router-dom";
 import logo from "../../assets/circles.svg";
 import useStyles from "./styles";
-
+import { getSearchQuery } from "../../lib";
+import SearchIcon from "@material-ui/icons/Search";
 import { useDispatch } from "react-redux";
 import { logoutReducer } from "../../Store/Auth";
 
@@ -19,6 +23,8 @@ const Navbar = ({ totalItems }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const history = useHistory();
+  const [searchTerm , setSearchTerm  ]  = useState(() => getSearchQuery())
+  const navRef = useRef(null);
 
   const handleLogout = () => {
     dispatch(logoutReducer());
@@ -28,8 +34,26 @@ const Navbar = ({ totalItems }) => {
     history.push("/ordershistory");
   };
 
+  const handleInputClick = () => {
+    navRef.current.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    console.log('SEARCH PAGE')
+    const term = getSearchQuery();
+    console.log('SEARCH TERM TERM',term)
+    setSearchTerm(term);
+  }, [])
+
+  const handleEnter = (event) => {
+    if (event.key === 'Enter') {
+      history.push(`/search?q=${searchTerm}`);
+    }
+  }
+
+
   return (
-    <div>
+    <div ref={navRef} >
       <AppBar position="fixed" className={classes.appBar} color="inherit">
         <Toolbar>
           <Typography
@@ -45,10 +69,28 @@ const Navbar = ({ totalItems }) => {
               height="50px"
               className={classes.image}
             />
-            <div>BoOKSBOoks</div>
+            <div>BNV BOOKS</div>
           </Typography>
 
+          <Input
+            className={classes.searchb}
+            type="text"
+            placeholder="Which book are you looking for?"
+            defaultValue={searchTerm }
+            onClick={handleInputClick}
+            onChange={(event) => {
+              setSearchTerm(event.target.value);
+            }}
+            onKeyPress={handleEnter}
+            startAdornment={
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            }
+          />
+
           <div className={classes.grow} />
+
           <div className={classes.button}>
             <IconButton
               component={Link}
@@ -65,6 +107,18 @@ const Navbar = ({ totalItems }) => {
               </Badge>
             </IconButton>
           </div>
+
+          <div className={classes.button}>
+            <IconButton
+              component={Link}
+              to="/ordershistory"
+              aria-label="Show cart items"
+              color="inherit"
+            >
+              <BsBoxSeam size={22} />
+            </IconButton>
+          </div>
+
           <div className={classes.button}>
             <IconButton
               onClick={handleLogout}
@@ -73,15 +127,7 @@ const Navbar = ({ totalItems }) => {
             >
               <ExitToApp />
             </IconButton>
-            <Badge
-              color="secondary"
-              overlap="rectangular"
-              style={{ paddingLeft: 4}}
-              onClick={handleOrders}
-              >
-              <BsBoxSeam size={22} />
-            
-            </Badge>
+          
           </div>
         </Toolbar>
       </AppBar>
