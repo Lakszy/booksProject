@@ -12,7 +12,7 @@ import {
 } from 'redux-persist';
 
 import auth from './Auth';
-import ecom from './Ecom'
+import ecom from './Ecom';
 import storage from 'redux-persist/lib/storage';
 
 const reducers = combineReducers({
@@ -23,7 +23,7 @@ const reducers = combineReducers({
 const persistConfig = {
   key: 'root',
   storage: storage,
-  whitelist: [ 'auth','ecom'],
+  whitelist: [ 'auth','ecom',],
 };
 
 const persistedReducer = persistReducer(persistConfig, reducers);
@@ -36,9 +36,6 @@ const store = configureStore({
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
     });
-
-   
-
     return middlewares;
   },
 });

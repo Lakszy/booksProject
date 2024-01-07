@@ -1,7 +1,11 @@
+// Signup.js
+
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../lib";
+import { useDispatch } from 'react-redux';
+
 import loginStyles from "../../styles";
 import { useDispatch } from "react-redux";
 import { loginReducer } from "../../Store/Auth";
@@ -35,9 +39,10 @@ const Signup = () => {
         history.push("/products");
       }
     } catch (error) {
-      // Handle specific error messages
       if (error.code === "auth/email-already-in-use") {
-        setError("Email is already in use. Please use a different email or log in.");
+        setError(
+          "Email is already in use. Please use a different email or log in."
+        );
       } else {
         console.error("Error creating user:", error);
         setError("Error creating user. Please try again.");
@@ -48,58 +53,61 @@ const Signup = () => {
   };
 
   return (
-    <div style={loginStyles.loginBox}>
-      <div style={loginStyles.loginForm}>
-        <h2 style={loginStyles.header}>Sign Up</h2>
-        <div style={loginStyles.inputContainer}>
-          <label style={loginStyles.label} htmlFor="email">
-            Email:
-          </label>
-          <input
-            style={loginStyles.input}
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div style={loginStyles.inputContainer}>
-          <label style={loginStyles.label} htmlFor="password">
-            Password:
-          </label>
-          <input
-            style={loginStyles.input}
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <div style={loginStyles.inputContainer}>
-          <label style={loginStyles.label} htmlFor="confirmPassword">
-            Confirm Password:
-          </label>
-          <input
-            style={loginStyles.input}
-            type="password"
-            id="confirmPassword"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-        </div>
-        {error && <p style={loginStyles.error}>{error}</p>}
-        <div style={loginStyles.buttonContainer}>
-          <button
-            style={loginStyles.button}
-            onClick={handleSignup}
-            disabled={loading}
-          >
-            {loading ? "Signing up..." : "Sign Up"}
-          </button>
-          <a href='/'>Already have an account</a>
+    <>
+      <div style={loginStyles.loginBox}>
+        <div style={loginStyles.loginForm}>
+          <h2 style={loginStyles.header}>Sign Up</h2>
+          <div style={loginStyles.inputContainer}>
+            <label style={loginStyles.label} htmlFor="email">
+              Email:
+            </label>
+            <input
+              style={loginStyles.input}
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div style={loginStyles.inputContainer}>
+            <label style={loginStyles.label} htmlFor="password">
+              Password:
+            </label>
+            <input
+              style={loginStyles.input}
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <div style={loginStyles.inputContainer}>
+            <label style={loginStyles.label} htmlFor="confirmPassword">
+              Confirm Password:
+            </label>
+            <input
+              style={loginStyles.input}
+              type="password"
+              id="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          </div>
+          {error && <p style={loginStyles.error}>{error}</p>}
+          <div style={loginStyles.buttonContainer}>
+            <button
+              style={loginStyles.button}
+              onClick={handleSignup}
+              disabled={loading}
+            >
+              {loading ? "Signing up..." : "Sign Up"}
+            </button>
+            <a href="/">Already have an account</a>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
+
 export default Signup;

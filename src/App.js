@@ -138,7 +138,7 @@ const App = () => {
   }, []);
 
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
-
+  console.log('CART GOES HERE', cart)
   return (
     <div>
       {/* <p style={{marginTop :100}} >hello  : {JSON.stringify(Object.keys(cart))} </p> */}

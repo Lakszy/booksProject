@@ -3,7 +3,7 @@ import { Typography, Button, Divider } from "@material-ui/core";
 import Review from "./Review";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../../lib/firebase";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { emptyCart } from "../../Store/Ecom";
 
 const PaymentForm = ({
@@ -14,9 +14,12 @@ const PaymentForm = ({
   onCaptureCheckout,
 }) => {
   const dispatch = useDispatch();
+  const {user} = useSelector((state) => state.auth);
 
   const handlePayOnDelivery = async () => {
     const orderId = new Date().toISOString();
+    const orderRef = doc(db, "orders", orderId);
+
     const orderData = {
       line_items: checkoutToken.live.line_items,
       customer: {
@@ -39,11 +42,13 @@ const PaymentForm = ({
           id: "pay_on_delivery",
         },
       },
+      userUid: user.uid,
     };
 
     try {
-      await setDoc(doc(db, "orders", orderId), orderData);
-      dispatch(emptyCart()); 
+      // Log intermediate values for debugging
+      await setDoc(orderRef, orderData);
+      dispatch(emptyCart());
       onCaptureCheckout(checkoutToken.id, orderData);
       nextStep();
     } catch (error) {
@@ -53,6 +58,7 @@ const PaymentForm = ({
 
   return (
     <>
+      <p>User ID: {user.uid}</p>
       <Review checkoutToken={checkoutToken} />
       <Divider />
       <Typography variant="h6" gutterBottom style={{ margin: "20px 0" }}>
