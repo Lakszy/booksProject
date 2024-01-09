@@ -49,6 +49,7 @@ const SearchPage = ({onAddToCart}) => {
    
 
     useEffect(() => {
+        console.log('SEARCH TERM CHANGED',searchTerm)
         if(!searchTerm) return;
         fetchSearchProducts(searchTerm);
     }, [searchTerm,])

@@ -32,6 +32,16 @@ export default makeStyles(() => ({
       boxShadow: "none",
     },
   },
+  buttonAdded: {
+    background: "tomato",
+    color: "white",
+    width: "100%",
+    height: "40px",
+    "&:hover": {
+      backgroundColor: "#2a344a",
+      boxShadow: "none",
+    },
+  },
   cardContentName: {
     fontSize: 20,
     textAlign: "center",

@@ -11,17 +11,20 @@ import {
 } from "@mui/material";
 import {commerce} from "../../lib/commerce";
 import { FormControl, Radio, RadioGroup, Typography } from "@material-ui/core";
+import { useSelector, useDispatch } from "react-redux";
+import { setCategories } from "../../Store/Ecom";
 
 const ProductFilterCard = ({
     onApplyFilter,
 }) => {
-    const [categories , setCategories] = useState([])
+    const {categories} = useSelector(state => state.ecom);
     const [selectedFilters , setSelectedFilters] = useState([]);
     const [selectedSortBy , setSelectedSortBy] = useState();
+    const dispatch = useDispatch();
 
     const fetchCategoriesList = async () => {
         const resp = await commerce.categories.list()
-        setCategories(resp.data)
+        dispatch(setCategories(resp.data))
     }
 
     const handleSortChange = (e) => {
@@ -78,7 +81,7 @@ const ProductFilterCard = ({
             <Divider sx={{ mt: 2, mb: 3 }} />
              <Typography variant="h6" gutterBottom>Filter</Typography>
             {
-                categories.map((item) => (
+                categories?.map((item) => (
                     <FormControlLabel
                         onChange={handleFilterChange}
                         value={item?.slug}

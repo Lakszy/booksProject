@@ -5,6 +5,8 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialObj = {
     cartQty : 0,
     cart : [],
+    categories : [],
+    productIds : [],
 };
 
 const slice = createSlice({
@@ -24,16 +26,24 @@ const slice = createSlice({
         },
         setCartReducer : (state, {payload}) => {
             state.cart = payload;
-            state.cartQty = payload.length;
+            state.productIds = payload.line_items.map(item => item.product_id);
+            state.cartQty = payload.total_unique_items;
         },
         emptyCart : (state) => {
             state.cart = [];
             state.cartQty = 0;
+        },
+        setCategories : (state, {payload}) => {
+            state.categories = payload;
+        },
+        setProductIds : (state, {payload}) => {
+            state.productIds = payload;
+            state.cartQty = payload.length;
         }
     },
 });
 
-export const { addToCart , removeFromCart, updateCartItem, setCartReducer, emptyCart } =
+export const { addToCart , removeFromCart, updateCartItem, setCartReducer, emptyCart,setCategories,setProductIds } =
     slice.actions;
 
 export default slice.reducer;

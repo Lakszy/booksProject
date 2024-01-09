@@ -47,7 +47,9 @@ const Navbar = ({ totalItems }) => {
 
   const handleEnter = (event) => {
     if (event.key === 'Enter') {
-      history.push(`/search?q=${searchTerm}`);
+      //reload the page with the search term
+      history.push(`/search?q=${searchTerm}`)
+      window.location.reload();
     }
   }
 

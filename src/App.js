@@ -68,7 +68,7 @@ const App = () => {
   const { isLoggedIn } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
-  const { cart } = useSelector((state) => state.ecom);
+  const { cart, cartQty } = useSelector((state) => state.ecom);
 
   const setCart = (payload) => {
     console.log("BEFORE SETTING CART", payload);
@@ -146,10 +146,14 @@ const App = () => {
         <Router>
           <div style={{ display: "flex" }}>
             <CssBaseline />
+            {
+              isLoggedIn &&
+            
             <Navbar
-              totalItems={cart.total_unique_items}
+              totalItems={cartQty}
               handleDrawerToggle={handleDrawerToggle}
             />
+            }
             <Suspense
               fallback={
                 <div style={{ fontSize: "3rem", fontFamily: "fantasy" }}>
